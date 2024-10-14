@@ -7,8 +7,12 @@ on:
 
 jobs:
   deploy-to-huggingface:
+    # inspired by https://huggingface.co/blog/severo/build-static-html-spaces
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Install huggingface_hub
         run: pip install --upgrade "huggingface_hub[cli]"
       - name: Checkout the code
