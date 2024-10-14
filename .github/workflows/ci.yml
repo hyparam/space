@@ -1,0 +1,35 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy-to-huggingface:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install huggingface_hub
+        run: pip install --upgrade "huggingface_hub[cli]"
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Copy the README.md from the space to the public folder
+        env:
+          # Create in https://huggingface.co/settings/tokens
+          # Setup as HF_TOKEN in https://github.com/severo/space/settings/secrets/actions
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          STATIC_SPACE: "severo/parquet-viewer"
+          DIRECTORY: "public"
+        run: huggingface-cli download --token=$HF_TOKEN --repo-type=space --local-dir=public $STATIC_SPACE README.md
+      - name: Delete hfh cache
+        env:
+          DIRECTORY: "public"
+        run: rm -rf $DIRECTORY/.cache
+      - name: Push to HF space (deleting the previous files)
+        env:
+          # Create in https://huggingface.co/settings/tokens
+          # Setup as HF_TOKEN in https://github.com/severo/space/settings/secrets/actions
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          STATIC_SPACE: "severo/parquet-viewer"
+          DIRECTORY: "public"
+        run: huggingface-cli upload --token=$HF_TOKEN --repo-type=space $STATIC_SPACE $DIRECTORY . --delete "*"
