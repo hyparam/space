@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+// import Cell from './Cell.tsx'
+import File from './File.tsx'
+// import Folder from './Folder.tsx'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const key = "https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet"
+  return <File file={key} />
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => { setCount((count) => count + 1) }}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  // const search = new URLSearchParams(location.search)
+  // const key = search.get('key') ?? ''
+  // if (Array.isArray(key)) throw new Error('key must be a string')
+
+  // if (!key || key.endsWith('/')) {
+  //   // folder view
+  //   const prefix = key.replace(/\/$/, '')
+  //   return <Folder prefix={prefix} />
+  // } else if (search.has('col') && search.has('row')) {
+  //   // cell view
+  //   return <Cell />
+  // } else {
+  //   // file view
+  //   return <File file={key} />
+  // }
 }
 
 export default App
