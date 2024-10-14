@@ -1,4 +1,4 @@
-name: CI
+name: Deploy to Hugging Face
 on:
   push:
     branches:
@@ -7,10 +7,10 @@ on:
 
 env:
   STATIC_SPACE: "severo/parquet-viewer"
-  DIRECTORY: "public"
+  DIRECTORY: "dist"
 
 jobs:
-  deploy-to-huggingface:
+  deploy:
     # inspired by https://huggingface.co/blog/severo/build-static-html-spaces
     runs-on: ubuntu-latest
     steps:
@@ -22,6 +22,12 @@ jobs:
         run: pip install --upgrade "huggingface_hub[cli]"
       - name: Checkout the code
         uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: build the app
+        run: npm install && npm run build
       - name: Copy the README.md from the space to the public folder
         run: huggingface-cli download --token=${{ secrets.HF_TOKEN }} --repo-type=space --local-dir=${{env.DIRECTORY}} ${{env.STATIC_SPACE}} README.md
       - name: Delete hfh cache
