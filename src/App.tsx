@@ -4,11 +4,9 @@ import File from './File.tsx'
 import './App.css'
 
 function App() {
-  const key = "https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet"
-
   const search = new URLSearchParams(location.search)
-  // const key = search.get('key') ?? ''
-  // if (Array.isArray(key)) throw new Error('key must be a string')
+  const key = search.get('key') ?? "https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet"
+  if (Array.isArray(key)) throw new Error('key must be a string')
 
   // if (!key || key.endsWith('/')) {
   //   // folder view
