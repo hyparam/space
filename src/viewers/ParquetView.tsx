@@ -1,12 +1,13 @@
 import HighTable, { DataFrame, rowCache } from 'hightable'
 import { useEffect, useState } from 'react'
 import { parquetDataFrame } from '../tableProvider.ts'
-import { Spinner } from '../Layout.js'
-import ContentHeader from './ContentHeader.js'
+import { Spinner } from '../Layout.tsx'
+import ContentHeader from './ContentHeader.tsx'
 import {
   asyncBufferFromUrl,
   // FileMetaData,
   parquetMetadataAsync } from 'hyparquet'
+import { changeQueryString } from '../huggingface.ts'
 
 enum LoadingState {
   NotLoaded,
@@ -63,7 +64,7 @@ export default function ParquetView({ file, setProgress, setError }: ViewerProps
   }, [loading, file, setError, setProgress])
 
   const onDoubleClickCell: (col: number, row: number) => void = (col: number, row: number) => {
-    window.location.assign('/?row=' + row.toString() + '&col=' + col.toString())
+    changeQueryString(`?row=${row.toString()}&col=${col.toString()}`)
   }
 
   const headers = <>
