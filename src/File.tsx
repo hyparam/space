@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Layout from './Layout.tsx'
 import Viewer from './Viewer.tsx'
+import { changeQueryString } from './huggingface.ts'
 
 interface FileProps {
   file: string
@@ -23,7 +24,7 @@ export default function File({ file }: FileProps) {
     <nav className='top-header'>
       <div className='path'>
         {isUrl &&
-          <a href={`/?key=${file}`}>{file}</a>
+          <a href={`/?key=${file}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeQueryString(`/?key=${file}`) }}>{file}</a>
         }
         {/* {!isUrl && <>
           <a href='/files'>/</a>

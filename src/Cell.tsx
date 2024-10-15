@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { parquetDataFrame } from './tableProvider.js'
 import Layout from './Layout.js'
 import { asyncBufferFromUrl, parquetMetadataAsync } from 'hyparquet'
+import { changeQueryString } from './huggingface.js'
 
 interface CellProps {
   file: string
@@ -78,7 +79,7 @@ export default function CellView({ file, row, col }: CellProps) {
     <nav className='top-header'>
       <div className='path'>
         {
-          <a href={`/?key=${file}`}>{file}</a>
+          <a href={`/?key=${file}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeQueryString(`/?key=${file}`) }}>{file}</a>
         }
         {/* {!isUrl && <>
           <a href='/files'>/</a>
