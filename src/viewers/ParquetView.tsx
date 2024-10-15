@@ -63,7 +63,7 @@ export default function ParquetView({ file, setProgress, setError }: ViewerProps
   }, [loading, file, setError, setProgress])
 
   const onDoubleClickCell: (col: number, row: number) => void = (col: number, row: number) => {
-    location.href = '/?row=' + row.toString() + '&col=' + col.toString()
+    window.location.assign('/?row=' + row.toString() + '&col=' + col.toString())
   }
 
   const headers = <>
