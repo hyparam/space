@@ -78,7 +78,7 @@ export default function Markdown({ text, className }: MarkdownProps) {
       // Links
       if (line.includes('[') && line.includes(']') && line.includes('(') && line.includes(')')) {
         const linkedLine = line.replace(/\[(.*?)\]\((.*?)\)/g, (_, linkText: string, url: string) => {
-          return `<a href="${url}">${linkText}</a>`
+          return `<a href="${url}" target="_blank" rel="noopener">${linkText}</a>`
         })
         elements.push(<p dangerouslySetInnerHTML={{ __html: linkedLine }} key={i}></p>)
         continue

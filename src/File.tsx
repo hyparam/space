@@ -23,7 +23,7 @@ export default function File({ file }: FileProps) {
     <nav className='top-header'>
       <div className='path'>
         {isUrl &&
-          <a href={`/files?key=${file}`}>{file}</a>
+          <a href={`/?key=${file}`}>{file}</a>
         }
         {/* {!isUrl && <>
           <a href='/files'>/</a>

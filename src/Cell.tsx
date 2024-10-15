@@ -78,7 +78,7 @@ export default function CellView({ file, row, col }: CellProps) {
     <nav className='top-header'>
       <div className='path'>
         {
-          <a href={`/files?key=${file}`}>{file}</a>
+          <a href={`/?key=${file}`}>{file}</a>
         }
         {/* {!isUrl && <>
           <a href='/files'>/</a>
