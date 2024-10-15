@@ -62,9 +62,9 @@ export default function ParquetView({ file, setProgress, setError }: ViewerProps
     }
   }, [loading, file, setError, setProgress])
 
-  // const onDoubleClickCell = useCallback((col: number, row: number) => {
-  //   location.href = '/files?key=' + file + '&row=' + row + '&col=' + col
-  // }, [file])
+  const onDoubleClickCell: (col: number, row: number) => void = (col: number, row: number) => {
+    location.href = '/files?row=' + row.toString() + '&col=' + col.toString()
+  }
 
   const headers = <>
     {content?.dataframe && <span>{content.dataframe.numRows.toLocaleString('en-US')} rows</span>}
@@ -73,7 +73,7 @@ export default function ParquetView({ file, setProgress, setError }: ViewerProps
   return <ContentHeader content={content} headers={headers}>
     {content?.dataframe && <HighTable
       data={content.dataframe}
-      // onDoubleClickCell={onDoubleClickCell}
+      onDoubleClickCell={onDoubleClickCell}
       onError={setError} />}
 
     {loading && <Spinner className='center' />}
