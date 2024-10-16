@@ -124,6 +124,9 @@ main {
   white-space: nowrap;
   text-decoration-thickness: 1px;
 }
+.path a:not(:first-child)::before {
+  content: '/';
+}
 /* hide all but the last path link on small screens */
 @media (max-width: 360px) {
   .path a:not(:last-child) {

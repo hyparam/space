@@ -12,7 +12,7 @@ test.for([["ftp:"], ["email:"]])("'%s' scheme throws an error", ([scheme]) => {
 test.for([["https://some.url"], ["https://some.url/with/a/path"]])(
   "non-huggingface URL returns a NonHfUrl: %s",
   ([url]) => {
-    expect(parseUrl(url)).toEqual({ kind: "non-hf", url });
+    expect(parseUrl(url)).toEqual({ kind: "non-hf", raw: url });
   }
 );
 
@@ -23,7 +23,7 @@ test.for([
   ["https://huggingface.co/datasets"],
   ["https://huggingface.co/datasets/"],
 ])("base huggingface URL returns a BaseUrl: %s", ([url]) => {
-  expect(parseUrl(url)).toEqual({ kind: "base", url });
+  expect(parseUrl(url)).toEqual({ kind: "base", raw: url });
 });
 
 test.for([
@@ -31,7 +31,7 @@ test.for([
   ["https://huggingface.co/datasets/namespace/repo/", "namespace", "repo"],
   ["https://huggingface.co/datasets/namespace/123", "namespace", "123"],
 ])("dataset repo URL returns a RepoUrl: %s", ([url, namespace, repo]) => {
-  expect(parseUrl(url)).toEqual({ kind: "repo", namespace, repo, url });
+  expect(parseUrl(url)).toEqual({ kind: "repo", namespace, repo, raw: url });
 });
 
 test.for([
@@ -91,7 +91,7 @@ test.for([
       kind: "folder",
       namespace,
       repo,
-      url,
+      raw: url,
       branch,
       path,
     });
@@ -134,7 +134,7 @@ test.for([
       kind: "file",
       namespace,
       repo,
-      url,
+      raw: url,
       branch,
       path,
     });
@@ -184,7 +184,7 @@ test.for([
       kind: "file",
       namespace,
       repo,
-      url,
+      raw: url,
       branch,
       path,
     });

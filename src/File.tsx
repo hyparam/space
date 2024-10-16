@@ -1,41 +1,27 @@
 import { useState } from 'react'
 import Layout from './Layout.tsx'
 import Viewer from './Viewer.tsx'
-import { changeQueryString } from './huggingface.ts'
+import { NonHfUrl, FileUrl } from './huggingface.ts'
+import Breadcrumb from './Breadcrumb.tsx'
 
 interface FileProps {
-  file: string
+  url: NonHfUrl | FileUrl
 }
 
 /**
  * File viewer page
  */
-export default function File({ file }: FileProps) {
+export default function File({ url }: FileProps) {
   const [progress, setProgress] = useState<number>()
   const [error, setError] = useState<Error>()
 
   // File path from url
-  const path = file.split('/')
-  if (path.length < 1) throw new Error('Invalid file path')
+  const path = (url.kind === "file" ? url.path: url.raw).split('/')
+  if (path.length < 1) throw new Error('Invalid URL path')
   const fileName = path.at(-1);
-  const isUrl = file.startsWith('http://') || file.startsWith('https://')
 
   return <Layout progress={progress} error={error} title={fileName}>
-    <nav className='top-header'>
-      <div className='path'>
-        {isUrl &&
-          <a href={`/?url=${file}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeQueryString(`?url=${file}`) }}>{file}</a>
-        }
-        {/* {!isUrl && <>
-          <a href='/files'>/</a>
-          {file && file.split('/').slice(0, -1).map((sub, depth) =>
-            <a href={`/files?key=${path.slice(0, depth + 1).join('/')}/`} key={depth}>{sub}/</a>
-          )}
-          <a href={`/files?key=${file}`}>{fileName}</a>
-        </>} */}
-      </div>
-    </nav>
-
-    <Viewer file={file} setProgress={setProgress} setError={setError} />
+    <Breadcrumb url={url} />
+    <Viewer file={url.raw} setProgress={setProgress} setError={setError} />
   </Layout>
 }

@@ -30,10 +30,10 @@ function App() {
   if (parsedUrl.kind === "file" || parsedUrl.kind === "non-hf") {
     if (search.has('col') && search.has('row')) {
       // cell view
-      return <Cell file={url} row={Number(search.get('row'))} col={Number(search.get('col'))} />
+      return <Cell file={parsedUrl.raw} row={Number(search.get('row'))} col={Number(search.get('col'))} />
     } else {
       // file view
-      return <File file={url} />
+      return <File url={parsedUrl} />
     }
   }
 }
