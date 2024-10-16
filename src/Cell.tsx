@@ -25,13 +25,6 @@ export default function CellView({ file, row, col }: CellProps) {
   const [progress, setProgress] = useState<number>()
   const [error, setError] = useState<Error>()
 
-//   // File path from url
-//   const search = new URLSearchParams(location.search)
-//   const key = decodeURIComponent(search.get('key') ?? '')
-//   const path = key.split('/')
-//   const shortKey = path.at(-1)
-//   const isUrl = key.startsWith('http://') || key.startsWith('https://')
-//   const url = isUrl ? key : '/api/store/get?key=' + key
   // File path from url
   const path = file.split('/')
   if (path.length < 1) throw new Error('Invalid file path')
@@ -79,7 +72,7 @@ export default function CellView({ file, row, col }: CellProps) {
     <nav className='top-header'>
       <div className='path'>
         {
-          <a href={`/?key=${file}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeQueryString(`?key=${file}`) }}>{file}</a>
+          <a href={`/?url=${file}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeQueryString(`?url=${file}`) }}>{file}</a>
         }
         {/* {!isUrl && <>
           <a href='/files'>/</a>

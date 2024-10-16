@@ -9,32 +9,16 @@ export function changeQueryString(queryString: string) {
   window.location.assign(url);
 }
 
-// try to parse a Hugging Face URL
-//  const matches = /^https:\/\/(huggingface|hf)\.co\/datasets\/(.+?)\/(.+?)\/resolve\/(.+?)\/(.+?)$/i.exec(key)
-
-// cases:
-// - not a URL => error
-// - nothing, or hugging face or hugging face datasets => select a HF dataset
-// - a dataset repo => refs/convert/parquet branch, otherwise main branch, folder view
-// - a dataset repo + a branch => folder view
-// - a dataset repo + a branch + a path to a folder => folder view
-// - else: a file
-//   - col and row => cell view
-//   - else => file view
-
-interface Url {
-  key: string;
-}
-
-export interface NonHfUrl extends Url {
+export interface NonHfUrl {
+  url: string;
   kind: "non-hf";
 }
 
-export interface BaseUrl extends Url {
+export interface BaseUrl extends Omit<NonHfUrl, "kind">  {
   kind: "base";
 }
 
-export interface RepoUrl extends Url {
+export interface RepoUrl extends Omit<BaseUrl, "kind">  {
   kind: "repo";
   namespace: string;
   repo: string;
@@ -51,44 +35,44 @@ export interface FileUrl extends Omit<FolderUrl, "kind"> {
 }
 
 export function parseUrl(
-  key: string
+  url: string
 ): NonHfUrl | BaseUrl | RepoUrl | FolderUrl | FileUrl {
-  const url = new URL(key);
-  // ^ throws 'TypeError: URL constructor: {key} is not a valid URL.' if key is not a valid URL
+  const urlObject = new URL(url);
+  // ^ throws 'TypeError: URL constructor: {url} is not a valid URL.' if url is not a valid URL
   
-  if (url.protocol !== "https:" && url.protocol !== "http:") {
-    throw new Error("key must be a HTTP URL");
+  if (urlObject.protocol !== "https:" && urlObject.protocol !== "http:") {
+    throw new Error("url must be a HTTP URL");
   }
 
-  if (url.host !== "huggingface.co" && url.host !== "hf.co") {
-    return { kind: "non-hf", key } as NonHfUrl;
+  if (urlObject.host !== "huggingface.co" && urlObject.host !== "hf.co") {
+    return { kind: "non-hf", url } as NonHfUrl;
   }
 
-  if (/^\/(datasets(\/)?)?$/.exec(url.pathname)) {
-    return { kind: "base", key } as BaseUrl;
+  if (/^\/(datasets(\/)?)?$/.exec(urlObject.pathname)) {
+    return { kind: "base", url } as BaseUrl;
   }
 
   const repoCheck = /^\/datasets\/(?<namespace>[^/]+)\/(?<repo>[^/]+)\/?$/.exec(
-    url.pathname
+    urlObject.pathname
   );
   if (repoCheck?.groups) {
-    return { kind: "repo", key, ...repoCheck.groups } as RepoUrl;
+    return { kind: "repo", url, ...repoCheck.groups } as RepoUrl;
   }
 
   const folderCheck =
     /^\/datasets\/(?<namespace>[^/]+)\/(?<repo>[^/]+)\/tree\/(?<branch>[^/]+)(?<path>(\/[^/]+)*)\/?$/.exec(
-      url.pathname
+      urlObject.pathname
     );
   if (folderCheck?.groups && folderCheck.groups.branch !== "refs") {
-    return { kind: "folder", key, ...folderCheck.groups } as FolderUrl;
+    return { kind: "folder", url, ...folderCheck.groups } as FolderUrl;
   }
 
   const fileCheck =
     /^\/datasets\/(?<namespace>[^/]+)\/(?<repo>[^/]+)\/(blob|resolve)\/(?<branch>[^/]+)(?<path>(\/[^/]+)+)$/.exec(
-      url.pathname
+      urlObject.pathname
     );
   if (fileCheck?.groups && fileCheck.groups.branch !== "refs") {    
-    return { kind: "file", key, ...fileCheck.groups } as FileUrl;
+    return { kind: "file", url, ...fileCheck.groups } as FileUrl;
   }
 
   throw new Error("Unsupported Hugging Face URL");

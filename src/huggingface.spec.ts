@@ -1,8 +1,8 @@
 import { expect, test } from "vitest";
 import { parseUrl } from "./huggingface";
 
-test.for([[""], ["abc"]])("non-url string '%s' throws an error", ([key]) => {
-  expect(() => parseUrl(key)).to.throw();
+test.for([[""], ["abc"]])("non-url string '%s' throws an error", ([url]) => {
+  expect(() => parseUrl(url)).to.throw();
 });
 
 test.for([["ftp:"], ["email:"]])("'%s' scheme throws an error", ([scheme]) => {
@@ -11,8 +11,8 @@ test.for([["ftp:"], ["email:"]])("'%s' scheme throws an error", ([scheme]) => {
 
 test.for([["https://some.url"], ["https://some.url/with/a/path"]])(
   "non-huggingface URL returns a NonHfUrl: %s",
-  ([key]) => {
-    expect(parseUrl(key)).toEqual({ kind: "non-hf", key });
+  ([url]) => {
+    expect(parseUrl(url)).toEqual({ kind: "non-hf", url });
   }
 );
 
@@ -22,16 +22,16 @@ test.for([
   ["https://huggingface.co/"],
   ["https://huggingface.co/datasets"],
   ["https://huggingface.co/datasets/"],
-])("base huggingface URL returns a BaseUrl: %s", ([key]) => {
-  expect(parseUrl(key)).toEqual({ kind: "base", key });
+])("base huggingface URL returns a BaseUrl: %s", ([url]) => {
+  expect(parseUrl(url)).toEqual({ kind: "base", url });
 });
 
 test.for([
   ["https://huggingface.co/datasets/namespace/repo", "namespace", "repo"],
   ["https://huggingface.co/datasets/namespace/repo/", "namespace", "repo"],
   ["https://huggingface.co/datasets/namespace/123", "namespace", "123"],
-])("dataset repo URL returns a RepoUrl: %s", ([key, namespace, repo]) => {
-  expect(parseUrl(key)).toEqual({ kind: "repo", namespace, repo, key });
+])("dataset repo URL returns a RepoUrl: %s", ([url, namespace, repo]) => {
+  expect(parseUrl(url)).toEqual({ kind: "repo", namespace, repo, url });
 });
 
 test.for([
@@ -86,12 +86,12 @@ test.for([
   ],
 ])(
   "tree repo URL with a branch and an optional path returns a FolderUrl: %s",
-  ([key, namespace, repo, branch, path]) => {
-    expect(parseUrl(key)).toEqual({
+  ([url, namespace, repo, branch, path]) => {
+    expect(parseUrl(url)).toEqual({
       kind: "folder",
       namespace,
       repo,
-      key,
+      url,
       branch,
       path,
     });
@@ -129,12 +129,12 @@ test.for([
   ],
 ])(
   "blob repo URL with a branch and a path returns a FileUrl: %s",
-  ([key, namespace, repo, branch, path]) => {
-    expect(parseUrl(key)).toEqual({
+  ([url, namespace, repo, branch, path]) => {
+    expect(parseUrl(url)).toEqual({
       kind: "file",
       namespace,
       repo,
-      key,
+      url,
       branch,
       path,
     });
@@ -179,12 +179,12 @@ test.for([
   ],
 ])(
   "resolve repo URL with a branch and a path returns a FileUrl: %s",
-  ([key, namespace, repo, branch, path]) => {
-    expect(parseUrl(key)).toEqual({
+  ([url, namespace, repo, branch, path]) => {
+    expect(parseUrl(url)).toEqual({
       kind: "file",
       namespace,
       repo,
-      key,
+      url,
       branch,
       path,
     });
@@ -213,6 +213,6 @@ test.for([
   ["https://huggingface.co/datasets/namespace/repo/resolve/branch"],
   ["https://huggingface.co/datasets/namespace/repo/resolve/branch/"],
   ["https://huggingface.co/datasets/namespace/repo/resolve/branch/file/"],
-])("unrelated huggingface URL throws and error: %s", ([key]) => {
-  expect(() => parseUrl(key)).to.throw();
+])("unrelated huggingface URL throws and error: %s", ([url]) => {
+  expect(() => parseUrl(url)).to.throw();
 });

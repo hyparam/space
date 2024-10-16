@@ -24,7 +24,7 @@ export default function File({ file }: FileProps) {
     <nav className='top-header'>
       <div className='path'>
         {isUrl &&
-          <a href={`/?key=${file}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeQueryString(`?key=${file}`) }}>{file}</a>
+          <a href={`/?url=${file}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeQueryString(`?url=${file}`) }}>{file}</a>
         }
         {/* {!isUrl && <>
           <a href='/files'>/</a>
