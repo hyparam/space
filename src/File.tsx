@@ -15,14 +15,15 @@ export default function File({ url }: FileProps) {
   const [progress, setProgress] = useState<number>()
   const [error, setError] = useState<Error>()
 
+  const resolveUrl = url.kind === "file" ? url.resolveUrl:url.raw
   // File path from url
-  const path = (url.kind === "file" ? url.path: url.raw).split('/')
+  const path = resolveUrl.split('/')
   if (path.length < 1) throw new Error('Invalid URL path')
   const fileName = path.at(-1);
 
   return <Layout progress={progress} error={error} title={fileName}>
     <Breadcrumb url={url} />
-    <Viewer file={url.raw} setProgress={setProgress} setError={setError} />
+    <Viewer file={resolveUrl} setProgress={setProgress} setError={setError} />
     {/* ^ TODO(SL): pass url + support blob as well as resolve */}
   </Layout>
 }

@@ -57,7 +57,15 @@ test.for([
     "",
   ],
   [
-    "https://huggingface.co/datasets/namespace/repo/tree/refs%2Fpr%2F9",
+    "https://huggingface.co/datasets/namespace/repo/tree/refs/convert/parquet",
+    // also accepted because of URLSearchParams (see note in https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams)
+    "namespace",
+    "repo",
+    "refs%2Fconvert%2Fparquet",
+    "",
+  ],
+  [
+    "https://huggingface.co/datasets/namespace/repo/tree/refs/pr/9",
     "namespace",
     "repo",
     "refs%2Fpr%2F9",
@@ -106,6 +114,7 @@ test.for([
     "repo",
     "branch",
     "/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/file",
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/blob/branch/path/to/file",
@@ -113,6 +122,7 @@ test.for([
     "repo",
     "branch",
     "/path/to/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/path/to/file",
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/blob/refs%2Fconvert%2Fparquet/file",
@@ -120,6 +130,15 @@ test.for([
     "repo",
     "refs%2Fconvert%2Fparquet",
     "/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/refs%2Fconvert%2Fparquet/file",
+  ],
+  [
+    "https://huggingface.co/datasets/namespace/repo/blob/refs/convert/parquet/file",
+    "namespace",
+    "repo",
+    "refs%2Fconvert%2Fparquet",
+    "/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/refs%2Fconvert%2Fparquet/file",
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/blob/branch/file.parquet",
@@ -127,10 +146,11 @@ test.for([
     "repo",
     "branch",
     "/file.parquet",
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/file.parquet",
   ],
 ])(
   "blob repo URL with a branch and a path returns a FileUrl: %s",
-  ([url, namespace, repo, branch, path]) => {
+  ([url, namespace, repo, branch, path, resolveUrl]) => {
     expect(parseUrl(url)).toEqual({
       kind: "file",
       namespace,
@@ -139,6 +159,7 @@ test.for([
       action: "blob",
       branch,
       path,
+      resolveUrl
     });
   }
 );
@@ -150,6 +171,7 @@ test.for([
     "repo",
     "branch",
     "/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/file",
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/resolve/branch/file?download=true",
@@ -157,6 +179,7 @@ test.for([
     "repo",
     "branch",
     "/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/file",
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/resolve/branch/path/to/file",
@@ -164,6 +187,7 @@ test.for([
     "repo",
     "branch",
     "/path/to/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/path/to/file",
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/resolve/refs%2Fconvert%2Fparquet/file",
@@ -171,6 +195,7 @@ test.for([
     "repo",
     "refs%2Fconvert%2Fparquet",
     "/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/refs%2Fconvert%2Fparquet/file",
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/resolve/branch/file.parquet",
@@ -178,10 +203,11 @@ test.for([
     "repo",
     "branch",
     "/file.parquet",
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/file.parquet",
   ],
 ])(
   "resolve repo URL with a branch and a path returns a FileUrl: %s",
-  ([url, namespace, repo, branch, path]) => {
+  ([url, namespace, repo, branch, path, resolveUrl]) => {
     expect(parseUrl(url)).toEqual({
       kind: "file",
       namespace,
@@ -190,6 +216,7 @@ test.for([
       action: "resolve",
       branch,
       path,
+        resolveUrl
     });
   }
 );
@@ -205,7 +232,6 @@ test.for([
   ["https://huggingface.co/datasets/namespace/repo/branch"],
   ["https://huggingface.co/datasets/namespace/repo/tree"],
   ["https://huggingface.co/datasets/namespace/repo/tree/"],
-  ["https://huggingface.co/datasets/namespace/repo/tree/refs/convert/parquet"],
   ["https://huggingface.co/datasets/namespace/repo/blob"],
   ["https://huggingface.co/datasets/namespace/repo/blob/"],
   ["https://huggingface.co/datasets/namespace/repo/blob/branch"],
