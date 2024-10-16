@@ -26,12 +26,14 @@ export interface RepoUrl extends Omit<BaseUrl, "kind"> {
 
 export interface FolderUrl extends Omit<RepoUrl, "kind"> {
   kind: "folder";
+  action: "tree";
   branch: string;
   path: string;
 }
 
-export interface FileUrl extends Omit<FolderUrl, "kind"> {
+export interface FileUrl extends Omit<FolderUrl, "kind" | "action"> {
   kind: "file";
+  action: "resolve" | "blob";
 }
 
 export type HfUrl = BaseUrl | RepoUrl | FolderUrl | FileUrl;
@@ -64,7 +66,7 @@ export function parseUrl(url: string): ParsedUrl {
   }
 
   const folderCheck =
-    /^\/datasets\/(?<namespace>[^/]+)\/(?<repo>[^/]+)\/tree\/(?<branch>[^/]+)(?<path>(\/[^/]+)*)\/?$/.exec(
+    /^\/datasets\/(?<namespace>[^/]+)\/(?<repo>[^/]+)\/(?<action>tree)\/(?<branch>[^/]+)(?<path>(\/[^/]+)*)\/?$/.exec(
       urlObject.pathname
     );
   if (folderCheck?.groups && folderCheck.groups.branch !== "refs") {
@@ -72,7 +74,7 @@ export function parseUrl(url: string): ParsedUrl {
   }
 
   const fileCheck =
-    /^\/datasets\/(?<namespace>[^/]+)\/(?<repo>[^/]+)\/(blob|resolve)\/(?<branch>[^/]+)(?<path>(\/[^/]+)+)$/.exec(
+    /^\/datasets\/(?<namespace>[^/]+)\/(?<repo>[^/]+)\/(?<action>blob|resolve)\/(?<branch>[^/]+)(?<path>(\/[^/]+)+)$/.exec(
       urlObject.pathname
     );
   if (fileCheck?.groups && fileCheck.groups.branch !== "refs") {
@@ -89,6 +91,7 @@ export interface UrlPart {
 
 const baseUrl = "https://huggingface.co/datasets";
 
+// TODO(SL): docstring + tests
 export function getUrlParts(url: ParsedUrl): UrlPart[] {
   if (url.kind === "non-hf") {
     return [{ url: url.raw, text: url.raw }];
@@ -110,20 +113,25 @@ export function getUrlParts(url: ParsedUrl): UrlPart[] {
     }
     urlParts.push({
       url: `${baseUrl}/${url.namespace}/${url.repo}/tree/${url.branch}`,
-      text: url.kind === "folder" ? `tree/${url.branch}` : `blob/${url.branch}`, // TODO: blob or resolve? <= add a field in FileUrl?
+      text: `${url.action}/${url.branch}`
     });
-    for (const part of url.path.split("/").filter((part) => part !== "")) {
-      const last = urlParts.at(-1);
-      if (
-        last !== undefined // for typescript
-      ) {
-        urlParts.push({
-          url: `${last.url}/${part}`,
-          text: part,
-        });
-      }
+    const pathParts = url.path.split("/").filter((part) => part !== "");
+    const lastPart = pathParts.at(-1);
+    if (!lastPart) {
+      return urlParts;
     }
-
+    for (let i = 0; i < pathParts.length - 1; i++) {
+      urlParts.push({
+        url: `${baseUrl}/${url.namespace}/${url.repo}/tree/${
+          url.branch
+        }${pathParts.slice(i).join("/")}`,
+        text: pathParts[i],
+      });
+    }
+    urlParts.push({
+      url: `${baseUrl}/${url.namespace}/${url.repo}/${url.action}/${url.branch}${url.path}`,
+      text: lastPart
+    });
     return urlParts;
   }
 }

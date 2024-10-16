@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { parquetDataFrame } from './tableProvider.js'
 import Layout from './Layout.js'
 import { asyncBufferFromUrl, parquetMetadataAsync } from 'hyparquet'
-import { changeQueryString } from './huggingface.js'
+import { NonHfUrl, FileUrl } from './huggingface.ts'
+import Breadcrumb from './Breadcrumb.tsx'
 
 interface CellProps {
-  file: string
+  url: NonHfUrl | FileUrl
   row: number
   col: number
 }
@@ -19,39 +20,33 @@ enum LoadingState {
 /**
  * Cell viewer displays a single cell from a table.
  */
-export default function CellView({ file, row, col }: CellProps) {
+export default function CellView({ url, row, col }: CellProps) {
   const [loading, setLoading] = useState<LoadingState>(LoadingState.NotLoaded)
   const [text, setText] = useState<string | undefined>()
   const [progress, setProgress] = useState<number>()
   const [error, setError] = useState<Error>()
 
   // File path from url
-  const path = file.split('/')
-  if (path.length < 1) throw new Error('Invalid file path')
+  const path = (url.kind === "file" ? url.path: url.raw).split('/')
+  if (path.length < 1) throw new Error('Invalid URL path')
   const fileName = path.at(-1);
-  const isUrl = file.startsWith('http://') || file.startsWith('https://')
-  if (!isUrl) throw new Error('Only urls are supported')
-  const url = file
     
   // Load cell data
   useEffect(() => {
-
-
     async function loadCellData() {
       try {
+        {/* ^ TODO(SL): support blob as well as resolve */}
         // TODO: handle first row > 100kb
         setProgress(0.25)
-        const asyncBuffer = await asyncBufferFromUrl(url)
-        const from = { url, byteLength: asyncBuffer.byteLength }
+        const asyncBuffer = await asyncBufferFromUrl(url.raw)
+        const from = { url: url.raw, byteLength: asyncBuffer.byteLength }
         setProgress(0.5)
         const metadata = await parquetMetadataAsync(asyncBuffer)
         setProgress(0.75)
         const df = parquetDataFrame(from, metadata)
         const rows = await df.rows(row, row + 1)
         const colName = df.header[col]
-        // const cell = rows[0][colName]
         const text = stringify(rows[0][colName])
-        // console.log('cell', cell, text)
         setText(text)
       } catch (error) {
         setError(error as Error)
@@ -69,20 +64,7 @@ export default function CellView({ file, row, col }: CellProps) {
   }, [url, col, row, loading, setError])
 
   return <Layout progress={progress} error={error} title={fileName}>
-    <nav className='top-header'>
-      <div className='path'>
-        {
-          <a href={`/?url=${file}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeQueryString(`?url=${file}`) }}>{file}</a>
-        }
-        {/* {!isUrl && <>
-          <a href='/files'>/</a>
-          {key && key.split('/').slice(0, -1).map((sub, depth) =>
-            <a href={`/files?key=${path.slice(0, depth + 1).join('/')}/`} key={depth}>{sub}/</a>
-          )}
-          <a href={`/files?key=${key}`}>{path.at(-1)}</a>
-        </>} */}
-      </div>
-    </nav>
+    <Breadcrumb url={url} />
 
     {/* <Highlight text={text || ''} /> */}
     <pre className="viewer text">{text}</pre>

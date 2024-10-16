@@ -92,6 +92,7 @@ test.for([
       namespace,
       repo,
       raw: url,
+      action: "tree",
       branch,
       path,
     });
@@ -135,6 +136,7 @@ test.for([
       namespace,
       repo,
       raw: url,
+      action: "blob",
       branch,
       path,
     });
@@ -185,6 +187,7 @@ test.for([
       namespace,
       repo,
       raw: url,
+      action: "resolve",
       branch,
       path,
     });
