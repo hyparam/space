@@ -9,7 +9,7 @@ enum LoadingState {
 }
 
 interface ViewerProps {
-  file: string
+  url: string
   setError: (error: Error) => void
 }
 
@@ -21,14 +21,11 @@ interface Content {
 /**
  * Image viewer component.
  */
-export default function ImageView({ file, setError }: ViewerProps) {
+export default function ImageView({ url, setError }: ViewerProps) {
   const [loading, setLoading] = useState(LoadingState.NotLoaded)
   const [content, setContent] = useState<Content>()
 
   useEffect(() => {
-    const isUrl = file.startsWith('http://') || file.startsWith('https://')
-    const url = isUrl ? file : '/api/store/get?key=' + file
-
     async function loadContent() {
       try {
         const res = await fetch(url)
@@ -51,11 +48,11 @@ export default function ImageView({ file, setError }: ViewerProps) {
       loadContent().catch(() => undefined)
       return LoadingState.Loading
     })
-  }, [file, loading, setError])
+  }, [url, loading, setError])
 
   return <ContentHeader content={content}>
     {content?.dataUri && <img
-      alt={file}
+      alt={url}
       className='image'
       src={content.dataUri} />}
   </ContentHeader>

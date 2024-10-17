@@ -9,22 +9,19 @@ enum LoadingState {
 }
 
 interface ViewerProps {
-  file: string
+  url: string
   setError: (error: Error) => void
 }
 
 /**
  * Markdown viewer component.
  */
-export default function MarkdownView({ file, setError }: ViewerProps) {
+export default function MarkdownView({ url, setError }: ViewerProps) {
   const [loading, setLoading] = useState(LoadingState.NotLoaded)
   const [text, setText] = useState<string | undefined>()
 
 
   useEffect(() => {
-    const isUrl = file.startsWith('http://') || file.startsWith('https://')
-    const url = isUrl ? file : '/api/store/get?key=' + file
-
     async function loadContent() {
       try {
         const res = await fetch(url)
@@ -43,7 +40,7 @@ export default function MarkdownView({ file, setError }: ViewerProps) {
       loadContent().catch(() => undefined)
       return LoadingState.Loading
     })
-  }, [file, loading, setError])
+  }, [url, loading, setError])
 
   return <ContentHeader content={{ fileSize: text?.length }}>
     <Markdown className='markdown' text={text ?? ''} />

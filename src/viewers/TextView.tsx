@@ -9,7 +9,7 @@ enum LoadingState {
 }
 
 interface ViewerProps {
-  file: string
+  url: string
   setError: (error: Error) => void
   setProgress: (progress: number) => void
 }
@@ -17,16 +17,13 @@ interface ViewerProps {
 /**
  * Text viewer component.
  */
-export default function TextView({ file, setError }: ViewerProps) {
+export default function TextView({ url, setError }: ViewerProps) {
   const [loading, setLoading] = useState(LoadingState.NotLoaded)
   const [text, setText] = useState<string | undefined>()
   const textRef = useRef<HTMLPreElement>(null)
 
   // Load plain text content
   useEffect(() => {
-    const isUrl = file.startsWith('http://') || file.startsWith('https://')
-    const url = isUrl ? file : '/api/store/get?key=' + file
-  
     async function loadContent() {
       try {
         const res = await fetch(url)
@@ -45,7 +42,7 @@ export default function TextView({ file, setError }: ViewerProps) {
       loadContent().catch(() => undefined)
       return LoadingState.Loading
     })
-  }, [file, loading, setError])
+  }, [url, loading, setError])
 
   const headers = <>
     <span>{text ? newlines(text) : 0} lines</span>

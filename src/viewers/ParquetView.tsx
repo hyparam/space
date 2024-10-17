@@ -17,7 +17,7 @@ enum LoadingState {
 
 interface ViewerProps {
   url: string
-  resolveUrl?: string
+  resolveUrl: string
   setProgress: (progress: number) => void
   setError: (error: Error) => void
 }
@@ -39,9 +39,8 @@ export default function ParquetView({ url, resolveUrl, setProgress, setError }: 
     async function loadParquetDataFrame() {
       try {
         setProgress(0.33)
-        const sourceUrl = resolveUrl ?? url
-        const asyncBuffer = await asyncBufferFromUrl(sourceUrl)
-        const from = { url: sourceUrl, byteLength: asyncBuffer.byteLength }
+        const asyncBuffer = await asyncBufferFromUrl(resolveUrl)
+        const from = { url: resolveUrl, byteLength: asyncBuffer.byteLength }
         setProgress(0.66)
         const metadata = await parquetMetadataAsync(asyncBuffer)
         // setMetadata(metadata) // never used
