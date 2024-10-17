@@ -1,4 +1,5 @@
 import { ReactNode, useEffect } from 'react'
+import {cn } from './utils.ts'
 
 interface LayoutProps {
   children: ReactNode
@@ -47,13 +48,6 @@ function Sidebar() {
   return <nav className='nav'>
     <a className="brand" href='https://github.com/hyparam/' target="_blank" rel="noreferrer">hyperparam</a>
   </nav>
-}
-
-/**
- * Helper function to join class names
- */
-function cn(...names: (string | undefined | false)[]): string {
-  return names.filter(n => n).join(' ')
 }
 
 export function Spinner({ className }: { className: string }) {

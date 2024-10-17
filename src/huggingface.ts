@@ -105,7 +105,7 @@ export interface UrlPart {
   text: string;
 }
 
-const baseUrl = "https://huggingface.co/datasets";
+export const baseUrl = "https://huggingface.co/datasets";
 
 // TODO(SL): docstring + tests
 export function getUrlParts(url: ParsedUrl): UrlPart[] {

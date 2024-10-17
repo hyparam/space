@@ -1,6 +1,6 @@
 import Cell from "./Cell.tsx";
 import File from "./File.tsx";
-// import Folder from './Folder.tsx'
+import Folder from "./Folder.tsx";
 import "./App.css";
 import { parseUrl } from "./huggingface.ts";
 import Layout from "./Layout.tsx";
@@ -16,11 +16,7 @@ function App() {
 
   try {
     const parsedUrl = parseUrl(url);
-    if (
-      parsedUrl.kind === "base" ||
-      parsedUrl.kind === "repo" ||
-      parsedUrl.kind === "folder"
-    ) {
+    if (parsedUrl.kind === "base" || parsedUrl.kind === "repo") {
       return (
         <Layout title={parsedUrl.kind}>
           <Breadcrumb url={parsedUrl} />
@@ -28,6 +24,10 @@ function App() {
           <pre>{JSON.stringify(parsedUrl, null, 2)}</pre>
         </Layout>
       );
+    }
+    if (parsedUrl.kind === "folder") {
+      // folder view
+      return <Folder url={parsedUrl} />;
     }
     // file or non-hf
     if (search.has("col") && search.has("row")) {
@@ -51,7 +51,7 @@ function App() {
     );
   }
 
-  // TODO:
+  // TODO(SL):
   // - handle non HF differently from File
   // - base => select a dataset
   // - repo => find the branches, and select one (refs/convert/parquet, or main ?) + provide a select for the branches in the breadcrumb?, and show a folder
