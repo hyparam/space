@@ -38,8 +38,9 @@ export default function CellView({ url, row, col }: CellProps) {
         {/* ^ TODO(SL): support blob as well as resolve */}
         // TODO: handle first row > 100kb
         setProgress(0.25)
-        const asyncBuffer = await asyncBufferFromUrl(url.raw)
-        const from = { url: url.raw, byteLength: asyncBuffer.byteLength }
+        const sourceUrl = url.kind === "file" ? url.resolveUrl:url.raw
+        const asyncBuffer = await asyncBufferFromUrl(sourceUrl)
+        const from = { url: sourceUrl, byteLength: asyncBuffer.byteLength }
         setProgress(0.5)
         const metadata = await parquetMetadataAsync(asyncBuffer)
         setProgress(0.75)

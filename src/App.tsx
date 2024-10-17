@@ -53,7 +53,6 @@ function App() {
 
   // TODO:
   // - handle non HF differently from File
-  // - blob => resolve
   // - base => select a dataset
   // - repo => find the branches, and select one (refs/convert/parquet, or main ?) + provide a select for the branches in the breadcrumb?, and show a folder
   // - folder => show the files + select for the branches in the breadcrumb?

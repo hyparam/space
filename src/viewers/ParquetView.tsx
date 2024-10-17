@@ -16,7 +16,8 @@ enum LoadingState {
 }
 
 interface ViewerProps {
-  file: string
+  url: string
+  resolveUrl?: string
   setProgress: (progress: number) => void
   setError: (error: Error) => void
 }
@@ -29,20 +30,18 @@ interface Content {
 /**
  * Parquet file viewer
  */
-export default function ParquetView({ file, setProgress, setError }: ViewerProps) {
+export default function ParquetView({ url, resolveUrl, setProgress, setError }: ViewerProps) {
   const [loading, setLoading] = useState<LoadingState>(LoadingState.NotLoaded)
   const [content, setContent] = useState<Content>()
   // const [metadata, setMetadata] = useState<FileMetaData>() // TODO(SL): use it?
 
   useEffect(() => {
-    const isUrl = file.startsWith('http://') || file.startsWith('https://')
-    const url = isUrl ? file : '/api/store/get?key=' + file
-
     async function loadParquetDataFrame() {
       try {
         setProgress(0.33)
-        const asyncBuffer = await asyncBufferFromUrl(url)
-        const from = { url, byteLength: asyncBuffer.byteLength }
+        const sourceUrl = resolveUrl ?? url
+        const asyncBuffer = await asyncBufferFromUrl(sourceUrl)
+        const from = { url: sourceUrl, byteLength: asyncBuffer.byteLength }
         setProgress(0.66)
         const metadata = await parquetMetadataAsync(asyncBuffer)
         // setMetadata(metadata) // never used
@@ -61,10 +60,10 @@ export default function ParquetView({ file, setProgress, setError }: ViewerProps
       setLoading(LoadingState.Loading)
       loadParquetDataFrame().catch(() => undefined)
     }
-  }, [loading, file, setError, setProgress])
+  }, [loading, url, resolveUrl, setError, setProgress])
 
   const onDoubleClickCell: (col: number, row: number) => void = (col: number, row: number) => {
-    changeQueryString(`?url=${file}&row=${row.toString()}&col=${col.toString()}`)
+    changeQueryString(`?url=${url}&row=${row.toString()}&col=${col.toString()}`)
   }
 
   const headers = <>

@@ -5,7 +5,8 @@ import TableView from './viewers/ParquetView.tsx'
 import TextView from './viewers/TextView.tsx'
 
 interface ViewerProps {
-  file: string
+  url: string
+  resolveUrl?: string
   setError: (error: Error) => void
   setProgress: (progress: number) => void
 }
@@ -14,19 +15,19 @@ interface ViewerProps {
  * Get a viewer for a file.
  * Chooses viewer based on content type.
  */
-export default function Viewer({ file, setError, setProgress }: ViewerProps) {
-  const filename = file.replace(/\?.*$/, '') // remove query string
+export default function Viewer({ url, resolveUrl, setError, setProgress }: ViewerProps) {
+  const filename = url.replace(/\?.*$/, '') // remove query string
   if (filename.endsWith('.md')) {
-    return <MarkdownView file={file} setError={setError} />
+    return <MarkdownView file={url} setError={setError} />
   } else if (filename.endsWith('.parquet')) {
-    return <TableView file={file} setError={setError} setProgress={setProgress} />
+    return <TableView url={url} resolveUrl={resolveUrl} setError={setError} setProgress={setProgress} />
   } else if (imageTypes.some(type => filename.endsWith(type))) {
-    return <ImageView file={file} setError={setError} />
+    return <ImageView file={url} setError={setError} />
   }
 
   // Default to text viewer
   return <TextView
-    file={file}
+    file={url}
     setError={setError}
     setProgress={setProgress} />
 }

@@ -23,7 +23,7 @@ export default function File({ url }: FileProps) {
 
   return <Layout progress={progress} error={error} title={fileName}>
     <Breadcrumb url={url} />
-    <Viewer file={resolveUrl} setProgress={setProgress} setError={setError} />
+    <Viewer url={url.raw} resolveUrl={resolveUrl} setProgress={setProgress} setError={setError} />
     {/* ^ TODO(SL): pass url + support blob as well as resolve */}
   </Layout>
 }
