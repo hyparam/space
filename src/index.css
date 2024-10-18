@@ -94,7 +94,6 @@ main {
   color: #dde4ea;
   display: flex;
   height: 32px;
-  justify-content: space-between;
   min-height: 32px;
   padding-left: 8px;
 }
@@ -115,6 +114,15 @@ main {
 }
 .path::-webkit-scrollbar {
   display: none;
+}
+.home {
+  background: url(assets/home.svg);
+  background-position: left center;
+  background-repeat: no-repeat;
+  /* background-size: 12px; */
+  /* padding-left: 22px; */
+  width: 22px;
+  height: 100%;
 }
 .path a {
   color: #f0f8ff;

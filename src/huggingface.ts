@@ -112,22 +112,20 @@ export function getUrlParts(url: ParsedUrl): UrlPart[] {
   if (url.kind === "non-hf") {
     return [{ url: url.raw, text: url.raw }];
   } else {
-    const urlParts = [{ url: baseUrl, text: baseUrl }];
     if (url.kind === "base") {
-      return urlParts;
+      return [{ url: baseUrl, text: baseUrl }]
     }
     // TODO(SL): enable a route for the namespace?
     // urlParts.push({
     //   url: `${baseUrl}/${url.namespace}`,
     //   text: url.namespace,
     // });
-    urlParts.push({
-      url: `${baseUrl}/${url.namespace}/${url.repo}`,
-      text: `${url.namespace}/${url.repo}`,
-    });
+    const repoUrl = `${baseUrl}/${url.namespace}/${url.repo}`;
+    const urlParts = [{ url: repoUrl, text: repoUrl }];
     if (url.kind === "repo") {
       return urlParts;
     }
+
     urlParts.push({
       url: `${baseUrl}/${url.namespace}/${url.repo}/tree/${url.branch}`,
       text: `${url.action}/${url.branch}`,
