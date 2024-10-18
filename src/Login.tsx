@@ -20,8 +20,7 @@ export async function checkLogin() {
     // prompt=consent to re-trigger the consent screen instead of silently redirecting
 
     // @ts-expect-error window.huggingface is defined inside static Spaces.
-    const variables: Record<string, string> | null = (window.huggingface
-      ?.variables ?? null) as Record<string, string> | null;
+    const variables: Record<string, string> | null = (window.huggingface?.variables ?? null) as Record<string, string> | null;
     window.location.href =
       (await oauthLoginUrl({ scopes: variables?.OAUTH_SCOPES })) +
       "&prompt=consent";
