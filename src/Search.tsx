@@ -29,11 +29,11 @@ export default function Search() {
 
   return (
     <>
-      <input type="search" onChange={onChange} />
-      <ul>
+      <input  type="search" onChange={onChange} />
+      <ul className="ref-list" >
         {datasets.map((dataset) => (
           <li key={dataset.name}>
-            <a href={`/?url=${baseUrl}/${dataset.name}`}>{dataset.name}</a>
+            <a style={{fontSize: "0.9rem"}} href={`/?url=${baseUrl}/${dataset.name}`}>{dataset.name}</a>
           </li>
         ))}
       </ul>

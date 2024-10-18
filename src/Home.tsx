@@ -61,12 +61,10 @@ export default function Home() {
       <section>
         <h3>Parquet URL</h3>
         <p>You can also set a url to see your parquet data. 👀</p>
-        <form onSubmit={onUrlSubmit}>
-          <label>
-            URL:{" "}
-            <input name="url" defaultValue="https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet" style={{width: "100%"}} type="url"  />
-          </label>          
-          <button type="submit">View</button>
+        <form onSubmit={onUrlSubmit} style={{display: "flex", gap: "1rem"}}>
+          <label htmlFor="url">URL</label>
+          <input name="url" defaultValue="https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet" style={{width: "100%"}} type="url"  />
+          <button style={{fontSize: "1rem", padding: "0 0.5rem"}} type="submit">Open</button>
         </form>
         
         <p>
