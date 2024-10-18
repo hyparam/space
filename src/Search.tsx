@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { listDatasets, DatasetEntry } from "@huggingface/hub";
 import { baseUrl } from "./huggingface.ts";
+import Link from "./Link.tsx";
 
 export default function Search() {
   const [query, setQuery] = useState<string>();
@@ -32,8 +33,8 @@ export default function Search() {
       <input  type="search" onChange={onChange} />
       <ul className="ref-list" >
         {datasets.map((dataset) => (
-          <li key={dataset.name}>
-            <a style={{fontSize: "0.9rem"}} href={`/?url=${baseUrl}/${dataset.name}`}>{dataset.name}</a>
+          <li key={dataset.name} style={{fontSize: "0.9rem"}}>
+            <Link url={`${baseUrl}/${dataset.name}`}>{dataset.name}</Link>
           </li>
         ))}
       </ul>
