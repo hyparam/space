@@ -22,6 +22,8 @@ test.for([
   ["https://huggingface.co/"],
   ["https://huggingface.co/datasets"],
   ["https://huggingface.co/datasets/"],
+  ["https://huggingface.co/datasets/namespace"],
+  ["https://huggingface.co/datasets/namespace/"],
 ])("base huggingface URL returns a BaseUrl: %s", ([url]) => {
   expect(parseUrl(url)).toEqual({ kind: "base", raw: url });
 });
@@ -227,8 +229,6 @@ test.for([
   ["https://huggingface.co/tasks"],
   ["https://huggingface.co/models"],
   ["https://huggingface.co/spaces"],
-  ["https://huggingface.co/datasets/canonical-dataset"],
-  ["https://huggingface.co/datasets/canonical-dataset/"],
   ["https://huggingface.co/datasets/namespace/repo/branch"],
   ["https://huggingface.co/datasets/namespace/repo/tree"],
   ["https://huggingface.co/datasets/namespace/repo/tree/"],

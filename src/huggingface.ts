@@ -57,7 +57,9 @@ export function parseUrl(url: string): ParsedUrl {
     return { kind: "non-hf", raw: url } as NonHfUrl;
   }
 
-  if (/^\/(datasets(\/)?)?$/.exec(urlObject.pathname)) {
+  if (/^(\/datasets(\/[?<namespace>^/]+)?)?(\/)?$/.exec(urlObject.pathname)) {
+    // namespace: in case the user removes the repo name from the URL (hf.co/ns/repo => hf.co/ns),
+    // don't show an error, but send to the home page
     return { kind: "base", raw: url } as BaseUrl;
   }
 
