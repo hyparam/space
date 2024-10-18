@@ -4,26 +4,39 @@ import Folder from "./Folder.tsx";
 import "./App.css";
 import { parseUrl } from "./huggingface.ts";
 import Layout from "./Layout.tsx";
-import Breadcrumb from "./Breadcrumb.tsx";
+// import Breadcrumb from "./Breadcrumb.tsx";
 import Repository from "./Repository.tsx";
+import Home from "./Home.tsx";
 
 function App() {
   const search = new URLSearchParams(location.search);
   // TODO(SL): handle URLs with encoded `#`, like https://huggingface.co/datasets/codeparrot/github-code/blob/refs%2Fconvert%2Fparquet/C%23-all/partial-train/0000.parquet
-  const url =
-    search.get("url") ??
-    "https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet";
+  const url = search.get("url")
   if (Array.isArray(url)) throw new Error("url must be a string");
+
+  //"https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet";
+
+  if (url === null) {
+    return (
+      <Layout title="Home">
+        <Home></Home>
+      </Layout>
+    );
+  }
 
   try {
     const parsedUrl = parseUrl(url);
     if (parsedUrl.kind === "base") {
       return (
-        <Layout title={parsedUrl.kind}>
-          <Breadcrumb url={parsedUrl} />
-          <div className="error">Not implemented yet</div>
-          <pre>{JSON.stringify(parsedUrl, null, 2)}</pre>
-        </Layout>
+        <Layout title="Home">
+        <Home></Home>
+      </Layout>
+        // <Layout title={parsedUrl.kind}>
+        //   <Breadcrumb url={parsedUrl} />
+        //   <Home></Home>
+        //   {/* <div className="error">Not implemented yet</div>
+        //   <pre>{JSON.stringify(parsedUrl, null, 2)}</pre> */}
+        // </Layout>
       );
     }
     if (parsedUrl.kind === "repo") {

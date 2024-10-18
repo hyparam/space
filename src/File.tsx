@@ -23,6 +23,7 @@ export default function File({ url }: FileProps) {
 
   return <Layout progress={progress} error={error} title={fileName}>
     <Breadcrumb url={url} />
+    {/* TODO(SL): add 'layout' option, like in hyparam demo, to see Parquet metadata and layout */}
     <Viewer url={url.raw} resolveUrl={resolveUrl} setProgress={setProgress} setError={setError} />
   </Layout>
 }
