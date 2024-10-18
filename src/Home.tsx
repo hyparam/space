@@ -53,10 +53,10 @@ export default function Home() {
         performance windowed table viewing.
       </p>
 
-      <section>
+      {/* <section>
         Test OAuth
         <pre>{JSON.parse(localStorage.getItem("oauth") ?? "null")}</pre>
-      </section>
+      </section> */}
 
       <section>
         <h3>Select a dataset on Hugging Face</h3>
