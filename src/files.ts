@@ -31,45 +31,34 @@ function getNextPageUrl(headers: Headers): string | null {
   );
 }
 
-async function fetchPage<T>(
-  url: string,
-  init?: RequestInit
-): Promise<{ page: T[]; headers: Headers }> {
-  const response = await fetch(url, init);
-  if (!response.ok) {
-    throw new Error(`HTTP error ${response.status.toString()}`);
-  }
-  return {
-    page: (await response.json()) as T[],
-    headers: response.headers,
-  };
-}
+// async function fetchPage<T>(
+//   url: string,
+//   init?: RequestInit
+// ): Promise<{ page: T[]; headers: Headers }> {
+//   const response = await fetch(url, init);
+//   if (!response.ok) {
+//     throw new Error(`HTTP error ${response.status.toString()}`);
+//   }
+//   return {
+//     page: (await response.json()) as T[],
+//     headers: response.headers,
+//   };
+// }
 
 async function paginate<T>(url: string, init?: RequestInit): Promise<T[]> {
   /* Fetch all the results of a paginated API URL.
    * This is using the same "Link" header format as GitHub.
    * See https://docs.github.com/en/rest/guides/traversing-with-pagination#link-header
    */
-
   const pages: T[][] = [];
-  let result = await fetchPage<T>(url, init);
-  pages.push(result.page);
-
-  // Follow pages
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  while (true) {
-    const nextPageUrl = getNextPageUrl(result.headers);
-    if (!nextPageUrl) {
-      break;
+  let nextUrl: string | null = url;
+  while (nextUrl) {
+    const response = await fetch(nextUrl, init);
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status.toString()}`);
     }
-    if (nextPageUrl === url) {
-      // just in case
-      throw new Error(`Infinite loop detected: ${url}`);
-    }
-    url = nextPageUrl;
-    console.log(`Pagination detected. Requesting next page: ${url}`);
-    result = await fetchPage<T>(url, init);
-    pages.push(result.page);
+    pages.push(await response.json() as T[])
+    nextUrl = getNextPageUrl(response.headers);
   }
   return pages.flat();
 }
