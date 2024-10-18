@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { changeQueryString } from "./huggingface.ts";
+import Search from "./Search.tsx";
 
 /**
  * Home page
@@ -54,7 +55,7 @@ export default function Home() {
       <section>
         <h3>Select a dataset on Hugging Face</h3>
         <p>Search for a dataset:</p>
-
+        <Search></Search>
 
       </section>
       <section>
