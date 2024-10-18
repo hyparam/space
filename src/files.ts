@@ -5,27 +5,24 @@ export interface FileMetadata {
   path: string;
 }
 
-// export interface FileMetadata {
-//   key: string;
-//   eTag?: string;
-//   fileSize?: number;
-//   lastModified: string;
-// }
-/// https://huggingface.co/api/datasets/codeparrot/github-code/treesize/main
-/// https://huggingface.co/api/datasets/codeparrot/github-code/refs
-/// https://huggingface.co/api/datasets/codeparrot/github-code/tree/main/data (paginated - no date)
+interface RefResponse {
+  name: string;
+  ref: string;
+  targetCommit: string;
+}
 
-// export interface FileContent<T> {
-//   body: T
-//   key: string
-//   contentLength?: number
-//   contentType?: string
-//   eTag?: string
-//   fileName?: string
-//   fileSize?: number
-//   lastModified?: string
-//   contentRange?: string
-// }
+export const refTypes = [
+  "branches",
+  "tags",
+  "converts",
+  "pullRequests",
+] as const;
+type RefType = (typeof refTypes)[number];
+type RefsResponse = Partial<Record<RefType, RefResponse[]>>;
+
+export interface RefMetadata extends RefResponse {
+  refType: RefType; // TODO(SL): use it to style the refs differently?
+}
 
 function getNextPageUrl(headers: Headers): string | null {
   return (
@@ -61,9 +58,9 @@ async function paginate<T>(url: string, init?: RequestInit): Promise<T[]> {
   // Follow pages
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   while (true) {
-    const nextPageUrl = getNextPageUrl(result.headers)
+    const nextPageUrl = getNextPageUrl(result.headers);
     if (!nextPageUrl) {
-      break
+      break;
     }
     if (nextPageUrl === url) {
       // just in case
@@ -79,6 +76,8 @@ async function paginate<T>(url: string, init?: RequestInit): Promise<T[]> {
 
 /**
  * List contents of a folder in a HF dataset repo
+ *
+ * Example API URL: https://huggingface.co/api/datasets/codeparrot/github-code/tree/main/data
  *
  * @param namespace namespace name (org or user)
  * @param repo repository name
@@ -97,30 +96,33 @@ export async function listFiles(
   );
 }
 
-// export function getFileDateShort(file?: { lastModified?: string }): string {
-//   if (!file?.lastModified) return ''
-//   const date = new Date(file.lastModified)
-//   // time if within last 24 hours, date otherwise
-//   const time = date.getTime()
-//   const now = Date.now()
-//   if (now - time < 86400000) {
-//     return date.toLocaleTimeString('en-US')
-//   }
-//   return date.toLocaleDateString('en-US')
-// }
-
-// /**
-//  * Parse date from lastModified field and format as locale string
-//  *
-//  * @param file file-like object with lastModified
-//  * @param file.lastModified last modified date string
-//  * @returns formatted date string
-//  */
-// export function getFileDate(file?: { lastModified?: string }): string {
-//   if (!file?.lastModified) return ''
-//   const date = new Date(file.lastModified)
-//   return isFinite(date.getTime()) ? date.toLocaleString('en-US') : ''
-// }
+/**
+ * List refs in a HF dataset repo
+ *
+ * Example API URL: https://huggingface.co/api/datasets/codeparrot/github-code/refs
+ *
+ * @param namespace
+ * @param repo
+ *
+ * @returns the list of branches, tags, pull requests, and converts
+ */
+export async function listRefs(
+  namespace: string,
+  repo: string
+): Promise<RefMetadata[]> {
+  // TODO(SL): support private/gated repos
+  const response = await fetch(
+    `https://huggingface.co/api/datasets/${namespace}/${repo}/refs`
+  );
+  if (!response.ok) {
+    throw new Error(`HTTP error ${response.status.toString()}`);
+  }
+  const refsByType = await response.json() as RefsResponse;
+  return refTypes.flatMap(
+    (refType) =>
+      refsByType[refType]?.map((refResponse) => ({ refType, ...refResponse })) ?? []
+  );
+}
 
 /**
  * Format file size in human readable format

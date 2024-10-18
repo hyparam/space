@@ -182,6 +182,45 @@ main {
   padding: 10px;
 }
 
+/* ref list */
+.ref-list {
+  flex: 1;
+  list-style: none;
+  overflow-y: auto;
+  /* browsers like to cover the bottom row */
+  padding-bottom: 24px;
+  margin: 8px 0;
+}
+.ref-list li {
+  margin: 0;
+}
+.ref-list li:first-child a {
+  border-top: 1px solid #bbb;
+}
+.ref-list a {
+  border-bottom: 1px solid #bbb;
+  color: #444;
+  display: flex;
+  padding: 8px 12px;
+  text-decoration: none;
+}
+.ref-list a:hover {
+  background-color: #e2e2ee;
+}
+
+.ref-list a > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ref-tags {
+  background-color: #fffbeb;
+}
+.ref-converts {
+  background-color: #fee2e2;
+}
+
 /* file list */
 .file-list {
   flex: 1;

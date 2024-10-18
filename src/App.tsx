@@ -5,6 +5,7 @@ import "./App.css";
 import { parseUrl } from "./huggingface.ts";
 import Layout from "./Layout.tsx";
 import Breadcrumb from "./Breadcrumb.tsx";
+import Repository from "./Repository.tsx";
 
 function App() {
   const search = new URLSearchParams(location.search);
@@ -16,7 +17,7 @@ function App() {
 
   try {
     const parsedUrl = parseUrl(url);
-    if (parsedUrl.kind === "base" || parsedUrl.kind === "repo") {
+    if (parsedUrl.kind === "base") {
       return (
         <Layout title={parsedUrl.kind}>
           <Breadcrumb url={parsedUrl} />
@@ -24,6 +25,10 @@ function App() {
           <pre>{JSON.stringify(parsedUrl, null, 2)}</pre>
         </Layout>
       );
+    }
+    if (parsedUrl.kind === "repo") {
+      // repository view
+      return <Repository url={parsedUrl} />;
     }
     if (parsedUrl.kind === "folder") {
       // folder view
@@ -54,9 +59,7 @@ function App() {
   // TODO(SL):
   // - handle non HF differently from File
   // - base => select a dataset
-  // - repo => find the branches, and select one (refs/convert/parquet, or main ?) + provide a select for the branches in the breadcrumb?, and show a folder
-  // - folder => show the files + select for the branches in the breadcrumb?
-  // - file => select for the branches in the breadcrumb?
+  // - repo => select the branch
 }
 
 export default App;
