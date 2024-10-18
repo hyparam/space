@@ -367,11 +367,12 @@ main {
 
 /* welcome */
 #welcome {
-  position: absolute;
+  /* position: absolute;
   bottom: 0;
   top: 0;
   right: 0;
-  left: 0;
+  left: 0; */
+  position: relative;
   border: 2px #777;
   border-radius: 10px;
   color: #444;

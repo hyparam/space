@@ -15,9 +15,9 @@ function App() {
 
   if (url === null) {
     return (
-      <Layout title="Home">
+      // <Layout title="Home">
         <Home></Home>
-      </Layout>
+      // </Layout>
     );
   }
 
@@ -25,9 +25,9 @@ function App() {
     const parsedUrl = parseUrl(url);
     if (parsedUrl.kind === "base") {
       return (
-        <Layout title="Home">
+        // <Layout title="Home">
           <Home></Home>
-        </Layout>
+        // </Layout>
       );
     }
     if (parsedUrl.kind === "repo") {
