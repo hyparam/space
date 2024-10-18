@@ -35,10 +35,9 @@ export default function CellView({ url, row, col }: CellProps) {
   useEffect(() => {
     async function loadCellData() {
       try {
-        {/* ^ TODO(SL): support blob as well as resolve */}
         // TODO: handle first row > 100kb
         setProgress(0.25)
-        const sourceUrl = url.kind === "file" ? url.resolveUrl:url.raw
+        const sourceUrl = url.kind === "file" ? url.resolveUrl: url.raw
         const asyncBuffer = await asyncBufferFromUrl(sourceUrl)
         const from = { url: sourceUrl, byteLength: asyncBuffer.byteLength }
         setProgress(0.5)

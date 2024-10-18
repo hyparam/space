@@ -54,7 +54,6 @@ async function paginate<T>(url: string, init?: RequestInit): Promise<T[]> {
    * See https://docs.github.com/en/rest/guides/traversing-with-pagination#link-header
    */
 
-  // TODO(SL): we might change the function to return a generator that yields the results of each page
   const pages: T[][] = [];
   let result = await fetchPage<T>(url, init);
   pages.push(result.page);
