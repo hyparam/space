@@ -46,7 +46,7 @@ export default function Layout({ children, className, progress, error, title }: 
 
 function Sidebar() {
   return <nav className='nav'>
-    <a className="brand" href='https://github.com/hyparam/' target="_blank" rel="noreferrer">hyperparam</a>
+    <a className="brand" href='https://hyperparam.app' target="_blank" rel="noreferrer">hyperparam</a>
   </nav>
 }
 
