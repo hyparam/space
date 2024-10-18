@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from 'react'
 import {cn } from './utils.ts'
+import {checkLogin} from './Login.tsx'
 
 interface LayoutProps {
   children: ReactNode
@@ -23,6 +24,11 @@ interface LayoutProps {
 export default function Layout({ children, className, progress, error, title }: LayoutProps) {
   const errorMessage = error?.toString()
   if (error) console.error(error)
+
+  useEffect(() => {
+    checkLogin().catch((e: unknown) => {console.error(e)})
+  }, [])
+  // TODO(SL) use react context instead
 
   useEffect(() => {
     document.title = title ? `${title} - hyperparam` : 'hyperparam'

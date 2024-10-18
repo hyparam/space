@@ -52,6 +52,12 @@ export default function Home() {
         <a href="https://github.com/hyparam/hightable">hightable</a> for high
         performance windowed table viewing.
       </p>
+
+      <section>
+        Test OAuth
+        <pre>{JSON.parse(localStorage.getItem("oauth") ?? "null")}</pre>
+      </section>
+
       <section>
         <h3>Select a dataset on Hugging Face</h3>
         <p>Search for a dataset:</p>
