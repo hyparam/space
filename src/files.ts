@@ -1,10 +1,3 @@
-export interface FileMetadata {
-  type: "file" | "directory";
-  oid: string;
-  size: number;
-  path: string;
-}
-
 interface RefResponse {
   name: string;
   ref: string;
@@ -22,67 +15,6 @@ type RefsResponse = Partial<Record<RefType, RefResponse[]>>;
 
 export interface RefMetadata extends RefResponse {
   refType: RefType; // TODO(SL): use it to style the refs differently?
-}
-
-function getNextPageUrl(headers: Headers): string | null {
-  return (
-    /<(?<url>\S*?); rel="Next"/i.exec(headers.get("link") ?? "")?.groups?.url ??
-    null
-  );
-}
-
-// async function fetchPage<T>(
-//   url: string,
-//   init?: RequestInit
-// ): Promise<{ page: T[]; headers: Headers }> {
-//   const response = await fetch(url, init);
-//   if (!response.ok) {
-//     throw new Error(`HTTP error ${response.status.toString()}`);
-//   }
-//   return {
-//     page: (await response.json()) as T[],
-//     headers: response.headers,
-//   };
-// }
-
-async function paginate<T>(url: string, init?: RequestInit): Promise<T[]> {
-  /* Fetch all the results of a paginated API URL.
-   * This is using the same "Link" header format as GitHub.
-   * See https://docs.github.com/en/rest/guides/traversing-with-pagination#link-header
-   */
-  const pages: T[][] = [];
-  let nextUrl: string | null = url;
-  while (nextUrl) {
-    const response = await fetch(nextUrl, init);
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status.toString()}`);
-    }
-    pages.push(await response.json() as T[])
-    nextUrl = getNextPageUrl(response.headers);
-  }
-  return pages.flat();
-}
-
-/**
- * List contents of a folder in a HF dataset repo
- *
- * Example API URL: https://huggingface.co/api/datasets/codeparrot/github-code/tree/main/data
- *
- * @param namespace namespace name (org or user)
- * @param repo repository name
- * @param branch branch name
- * @param path folder path
- */
-export async function listFiles(
-  namespace: string,
-  repo: string,
-  branch: string,
-  path: string
-): Promise<FileMetadata[]> {
-  // TODO(SL): support private/gated repos
-  return paginate<FileMetadata>(
-    `https://huggingface.co/api/datasets/${namespace}/${repo}/tree/${branch}${path}`
-  );
 }
 
 /**

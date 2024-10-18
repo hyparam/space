@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FileMetadata, formatFileSize, listFiles } from './files.ts'
+import { formatFileSize } from "./files.ts";
+import { listFiles, ListFileEntry } from "@huggingface/hub";
 import Layout, { Spinner } from "./Layout.tsx";
 import { cn } from "./utils.ts";
 import { baseUrl, FolderUrl } from "./huggingface.ts";
@@ -15,14 +16,26 @@ interface FolderProps {
  */
 export default function Folder({ url }: FolderProps) {
   // State to hold file listing
-  const [files, setFiles] = useState<FileMetadata[]>();
+  const [files, setFiles] = useState<ListFileEntry[]>();
   const [error, setError] = useState<Error>();
   const listRef = useRef<HTMLUListElement>(null);
 
   // Fetch files on component mount
   useEffect(() => {
-    listFiles(url.namespace, url.repo, url.branch, url.path)
-      .then(setFiles)
+    async function fetchFiles() {
+      const filesIterator = listFiles({
+        repo: `datasets/${url.namespace}/${url.repo}`,
+        revision: url.branch,
+        path: url.path.replace(/^\//, ""), // remove leading slash if any
+        // TODO(SL): pass expand: true, to get the date
+      })
+      const files = []
+      for await (const file of filesIterator) {
+        files.push(file)
+      }
+      setFiles(files)
+    }
+    fetchFiles()
       .catch((error: unknown) => {
         setFiles([]);
         setError(error as Error);
@@ -30,19 +43,16 @@ export default function Folder({ url }: FolderProps) {
   }, [url]);
 
   const fileUrl = useCallback(
-    (file: FileMetadata) => {
+    (file: ListFileEntry) => {
       const action = file.type === "directory" ? "tree" : "blob";
       return `${baseUrl}/${url.namespace}/${url.repo}/${action}/${url.branch}/${file.path}`;
     },
     [url]
   );
 
-  const fileName = useCallback(
-    (file: FileMetadata) => {
-      return file.path.split("/").at(-1);
-    },
-    []
-  );
+  const fileName = useCallback((file: ListFileEntry) => {
+    return file.path.split("/").at(-1);
+  }, []);
 
   return (
     <Layout error={error} title={url.path}>
