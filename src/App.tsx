@@ -4,7 +4,7 @@ import Folder from "./Folder.tsx";
 import "./App.css";
 import { parseUrl } from "./huggingface.ts";
 import Layout from "./Layout.tsx";
-import Repository from "./Repository.tsx";
+// import Repository from "./Repository.tsx";
 import Home from "./Home.tsx";
 
 function App() {
@@ -32,7 +32,9 @@ function App() {
     }
     if (parsedUrl.kind === "repo") {
       // repository view
-      return <Repository url={parsedUrl} />;
+      // return <Repository url={parsedUrl} />;
+      // for now: assume the "main" branch exists, and show it
+      return <Folder url={{...parsedUrl, kind: "folder", path: "", branch: "main", action: "tree"}} />;
     }
     if (parsedUrl.kind === "folder") {
       // folder view
