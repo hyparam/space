@@ -1,18 +1,46 @@
 import ParquetWorker from "./parquetWorker?worker";
 import type {
   AsyncBufferFrom,
-  Message,
+  ParquetMessage,
   ParquetReadWorkerOptions,
   Row,
 } from "./types.ts";
-import { asyncBufferFromUrl, AsyncBuffer } from "hyparquet";
+import { asyncBufferFromUrl, AsyncBuffer, ColumnData } from "hyparquet";
 
 let worker: Worker | undefined;
 let nextQueryId = 0;
-const pending = new Map<
-  number,
-  { resolve: (value: Row[]) => void; reject: (error: Error) => void }
->();
+interface QueryAgent {
+  resolve: (value: Row[]) => void;
+  reject: (error: Error) => void;
+  onChunk?: (chunk: ColumnData) => void;
+}
+const pending = new Map<number, QueryAgent>();
+
+function getWorker() {
+  if (!worker) {
+    worker = new ParquetWorker();
+    worker.onmessage = ({ data }: { data: ParquetMessage }) => {
+      const pendingQueryAgent = pending.get(data.queryId);
+      if (!pendingQueryAgent) {
+        throw new Error(
+          `Unexpected: no pending promise found for queryId: ${data.queryId.toString()}`
+        );
+        // TODO(SL): should never happen. But if it does, I'm not sure if throwing an error here helps.
+      }
+      const { resolve, reject, onChunk } = pendingQueryAgent;
+      if ("error" in data) {
+        reject(data.error);
+      } else if ("result" in data) {
+        resolve(data.result);
+      } else if ("chunk" in data) {
+        onChunk?.(data.chunk);
+      } else {
+        reject(new Error("Unexpected message from worker"));
+      }
+    };
+  }
+  return worker;
+}
 
 /**
  * Presents almost the same interface as parquetRead, but runs in a worker.
@@ -22,7 +50,7 @@ const pending = new Map<
  */
 export function parquetQueryWorker({
   metadata,
-  asyncBuffer,
+  from,
   rowStart,
   rowEnd,
   orderBy,
@@ -30,37 +58,15 @@ export function parquetQueryWorker({
 }: ParquetReadWorkerOptions): Promise<Row[]> {
   return new Promise((resolve, reject) => {
     const queryId = nextQueryId++;
-    pending.set(queryId, { resolve, reject });
-    // Create a worker
-    if (!worker) {
-      worker = new ParquetWorker();
-      worker.onmessage = ({ data }: { data: Message }) => {
-        const pendingPromise = pending.get(data.queryId);
-        if (!pendingPromise) {
-          throw new Error(
-            `Unexpected: no pending promise found for queryId: ${data.queryId.toString()}`
-          );
-          // TODO(SL): should never happen. But if it does, I'm not sure if throwing an error here helps.
-        }
-        const { resolve, reject } = pendingPromise;
-        // Convert postmessage data to callbacks
-        if ("error" in data) {
-          reject(data.error);
-        } else if ("result" in data) {
-          resolve(data.result);
-        } else if ("chunk" in data) {
-          onChunk?.(data.chunk);
-        } else {
-          reject(new Error("Unexpected message from worker"));
-        }
-      };
-    }
+    pending.set(queryId, { resolve, reject, onChunk });
+    const worker = getWorker();
+
     // If caller provided an onChunk callback, worker will send chunks as they are parsed
     const chunks = onChunk !== undefined;
     worker.postMessage({
       queryId,
       metadata,
-      asyncBuffer,
+      from,
       rowStart,
       rowEnd,
       orderBy,
@@ -85,6 +91,12 @@ export async function asyncBufferFrom(
   return asyncBuffer;
 }
 const cache = new Map<string, Promise<AsyncBuffer>>();
+
+export function compare<T>(a: T, b: T): number {
+  if (a < b) return -1
+  if (a > b) return 1
+  return 1 // TODO: how to handle nulls?
+}
 
 // TODO(SL): once the types in cachedAsyncBuffer are fixed, import all the following from hyparquet
 type Awaitable<T> = T | Promise<T>;

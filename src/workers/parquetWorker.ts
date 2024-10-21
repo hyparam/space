@@ -1,19 +1,42 @@
 import { ColumnData, parquetQuery } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
-import type { ParquetReadWorkerOptions } from "./types.ts";
+import type {
+  ChunkMessage,
+  ErrorMessage,
+  ParquetReadWorkerOptions,
+  ResultMessage,
+} from "./types.ts";
 import { asyncBufferFrom } from "./parquetWorkerClient.ts";
+
+const postChunkMessage = ({ chunk, queryId }: ChunkMessage) => {
+  self.postMessage({ chunk, queryId });
+};
+const postResultMessage = ({ result, queryId }: ResultMessage) => {
+  self.postMessage({ result, queryId });
+};
+const postErrorMessage = ({ error, queryId }: ErrorMessage) => {
+  self.postMessage({ error, queryId });
+};
 
 self.onmessage = async ({
   data,
 }: {
   data: ParquetReadWorkerOptions & { queryId: number; chunks: boolean };
 }) => {
-  const { metadata, asyncBuffer, rowStart, rowEnd, orderBy, queryId, chunks } =
-    data;
-  const file = await asyncBufferFrom(asyncBuffer);
+  const {
+    metadata,
+    from,
+    rowStart,
+    rowEnd,
+    orderBy,
+    columns,
+    queryId,
+    chunks,
+  } = data;
+  const file = await asyncBufferFrom(from);
   const onChunk = chunks
     ? (chunk: ColumnData) => {
-        self.postMessage({ chunk, queryId });
+        postChunkMessage({ chunk, queryId });
       }
     : undefined;
   try {
@@ -23,11 +46,12 @@ self.onmessage = async ({
       rowStart,
       rowEnd,
       orderBy,
+      columns,
       compressors,
       onChunk,
     });
-    self.postMessage({ result, queryId });
+    postResultMessage({ result, queryId });
   } catch (error) {
-    self.postMessage({ error, queryId });
+    postErrorMessage({ error: error as Error, queryId });
   }
 };
