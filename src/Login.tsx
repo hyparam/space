@@ -4,6 +4,7 @@ import {
   OAuthResult,
 } from "@huggingface/hub";
 
+// see https://huggingface.co/spaces/huggingfacejs/client-side-oauth
 export async function checkLogin() {
   if (!("huggingface" in window)) {
     return null;
