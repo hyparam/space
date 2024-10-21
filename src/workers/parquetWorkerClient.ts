@@ -3,6 +3,9 @@ import type { AsyncBufferFrom, Message, ParquetReadWorkerOptions, Row } from './
 import { asyncBufferFromUrl, AsyncBuffer } from 'hyparquet'
 
 let worker: Worker | undefined
+let nextQueryId = 0
+const pending = new Map<number, { resolve: (value: Row[]) => void, reject: (error: Error) => void }>()
+
 /**
  * Presents almost the same interface as parquetRead, but runs in a worker.
  * This is useful for reading large parquet files without blocking the main thread.
@@ -13,21 +16,29 @@ export function parquetQueryWorker({
   metadata, asyncBuffer, rowStart, rowEnd, orderBy }: ParquetReadWorkerOptions
 ): Promise<Row[]> {
   return new Promise((resolve, reject) => {
+    const queryId = nextQueryId++
+    pending.set(queryId, { resolve, reject })
     // Create a worker
     if (!worker) {
       worker = new ParquetWorker()
-    }
-    worker.onmessage = ({ data }: { data: Message }) => {
-      // Convert postmessage data to callbacks
-      if ("error" in data) {
-        reject(data.error)
-      } else if ("result" in data) {
-        resolve(data.result)
-      } else {
-        reject(new Error('Unexpected message from worker'))
+      worker.onmessage = ({ data }: { data: Message }) => {
+        const pendingPromise = pending.get(data.queryId)
+        if (!pendingPromise) {
+          throw new Error(`Unexpected: no pending promise found for queryId: ${data.queryId.toString()}`)
+          // TODO(SL): should never happen. But if it does, I'm not sure if throwing an error here helps.
+        }
+        const { resolve, reject } = pendingPromise
+        // Convert postmessage data to callbacks
+        if ("error" in data) {
+          reject(data.error)
+        } else if ("result" in data) {
+          resolve(data.result)
+        } else {
+          reject(new Error('Unexpected message from worker'))
+        }
       }
     }
-    worker.postMessage({ metadata, asyncBuffer, rowStart, rowEnd, orderBy })
+    worker.postMessage({ queryId, metadata, asyncBuffer, rowStart, rowEnd, orderBy })
   })
 }
 
@@ -38,8 +49,8 @@ export async function asyncBufferFrom(from: AsyncBufferFrom): Promise<AsyncBuffe
   const key = JSON.stringify(from)
   const cached = cache.get(key)
   if (cached) return cached
-  const asyncBuffer = asyncBufferFromUrl(from.url, from.byteLength)
-  cache.set(key, asyncBuffer.then(cachedAsyncBuffer))
+  const asyncBuffer = asyncBufferFromUrl(from.url, from.byteLength).then(cachedAsyncBuffer)
+  cache.set(key, asyncBuffer)
   return asyncBuffer
 }
 const cache = new Map<string, Promise<AsyncBuffer>>()

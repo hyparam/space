@@ -17,8 +17,10 @@ export interface ParquetReadWorkerOptions {
 // Row is defined in hightable, but not exported + we change any to unknown
 export type Row = Record<string, unknown>;
 
-export type Message = {
+export type Message = ({
   result: Row[]
 } | {
   error: Error
+}) & {
+  queryId: number
 }
