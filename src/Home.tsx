@@ -68,8 +68,6 @@ export default function Home() {
             <p><a onClick={() => {login().catch(() => undefined)}}>Log in</a> to see your datasets</p>
           )
         }
-        <p>[DEBUG] Auth context:</p>
-        <pre style={{ textWrap: "wrap", fontSize: "10px"}}>{JSON.stringify(auth, undefined, 2)}</pre>
       </section>
       <section>
         <h3>Parquet URL</h3>

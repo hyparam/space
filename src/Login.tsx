@@ -9,7 +9,9 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
   let oauthResult: OAuthResult | false | null = JSON.parse(
     localStorage.getItem("oauth") ?? "null"
   ) as OAuthResult | false | null;
+  console.log("oauthResult A", oauthResult);
   oauthResult ||= await oauthHandleRedirectIfPresent();
+  console.log("oauthResult B", oauthResult);
   
   if (oauthResult) {
     localStorage.setItem("oauth", JSON.stringify(oauthResult));
@@ -42,7 +44,7 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
     }
   }
 
-  console.log("oauthResult", oauthResult);
+  console.log("oauthResult C", oauthResult);
 
   return oauthResult;
 }
@@ -52,42 +54,23 @@ export async function login() {
     redirectUrl: new URL(window.location.href).origin + "/",
     // pass a state to be returned in the call to `oauthLogin` after the redirect
     state: JSON.stringify({ redirect: window.location.href }),
-    ...(
-      "huggingface" in window &&
-      window.huggingface &&
-      typeof window.huggingface === "object" &&
-      "variables" in window.huggingface &&
-      window.huggingface.variables &&
-      typeof window.huggingface.variables === "object" &&
-      "OAUTH_SCOPES" in window.huggingface.variables &&
-      window.huggingface.variables.OAUTH_SCOPES &&
-      typeof window.huggingface.variables.OAUTH_SCOPES === "string" &&
-      "OAUTH_CLIENT_ID" in window.huggingface.variables &&
-      window.huggingface.variables.OAUTH_CLIENT_ID &&
-      typeof window.huggingface.variables.OAUTH_CLIENT_ID === "string"
-        ? {
-            clientId: window.huggingface.variables.OAUTH_CLIENT_ID,
-            scopes: window.huggingface.variables.OAUTH_SCOPES,
-          }
-        : {
-            clientId: "921c40c6-531f-419e-9aa8-3d1cc2606e5e", // obtained by creating an app at https://huggingface.co/settings/applications
-            // TODO(SL): don't hardcode the clientId
-            scopes: "openid profile read-repos",
-          }
-        )
-      // "huggingface" in window
-      // ? {
-      //     // static space: no need to pass clientId and scopes
-      //   }
-      // : {
-      //     clientId: "921c40c6-531f-419e-9aa8-3d1cc2606e5e", // obtained by creating an app at https://huggingface.co/settings/applications
-      //     // TODO(SL): don't hardcode the clientId
-      //     scopes: "openid profile read-repos",
-      //   }),
+    ...(     
+      
+      "huggingface" in window
+      ? {
+          // static space: no need to pass clientId and scopes
+        }
+      : {
+          clientId: "921c40c6-531f-419e-9aa8-3d1cc2606e5e", // obtained by creating an app at https://huggingface.co/settings/applications
+          // TODO(SL): don't hardcode the clientId
+          scopes: "openid profile read-repos",
+        }),
   };
   // prompt=consent to re-trigger the consent screen instead of silently redirecting
   // TODO(SL): remove the consent screen? what does it mean?
-  window.location.href = (await oauthLoginUrl(options)) + "&prompt=consent";
+  const url = (await oauthLoginUrl(options)) + "&prompt=consent"
+  console.log("login url", url);
+  window.location.href = url;
 }
 
 export function logout() {

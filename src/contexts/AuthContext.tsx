@@ -48,8 +48,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [auth, setAuth] = useState<AuthContextValue | undefined>(undefined);
 
   useEffect(() => {
+    console.log("fetching OAuth");
     fetchOAuth()
       .then((oAuthResult) => {
+        console.log("fetched OAuth", oAuthResult);
         if (!oAuthResult) {
           setAuth(createEmptyAuth());
           return;
@@ -63,6 +65,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setAuth(createAuthFromOAuthResult(oAuthResult));
       })
       .catch((e: unknown) => {
+        console.error("Error fetching OAuth");
         setAuth(createEmptyAuth());
         console.error(e);
       });
