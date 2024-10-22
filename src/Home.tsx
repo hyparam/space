@@ -61,13 +61,15 @@ export default function Home() {
         <p>Search for a dataset:</p>
         <Search></Search>
 
-        {
+        {          
           auth?.oAuthResult ? (
             <p>Logged in as {auth.oAuthResult.userInfo.name}. <a onClick={() => {logout()}}>Log out</a></p>
           ) : (
             <p><a onClick={() => {login().catch(() => undefined)}}>Log in</a> to see your datasets</p>
           )
-        }          
+        }
+        <p>[DEBUG] Auth context:</p>
+        <pre style={{ textWrap: "wrap", fontSize: "10px"}}>{JSON.stringify(auth, undefined, 2)}</pre>
       </section>
       <section>
         <h3>Parquet URL</h3>

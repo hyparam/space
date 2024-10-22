@@ -53,6 +53,8 @@ export async function login() {
     ...("huggingface" in window
       ? {
           // static space: no need to pass clientId and scopes
+          scopes: "openid profile read-repos",
+          // TODO(SL) ^remove?
         }
       : {
           clientId: "921c40c6-531f-419e-9aa8-3d1cc2606e5e", // obtained by creating an app at https://huggingface.co/settings/applications
