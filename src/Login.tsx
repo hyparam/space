@@ -14,16 +14,25 @@ export async function checkLogin() {
     localStorage.getItem("oauth") ?? "null"
   ) as OAuthResult | false | null;
   oauthResult ||= await oauthHandleRedirectIfPresent();
+  console.log("oauthResult", oauthResult);
 
   if (oauthResult) {
     localStorage.setItem("oauth", JSON.stringify(oauthResult));
   } else {
+    if (
+      !window.huggingface ||
+      typeof window.huggingface !== "object" ||
+      !("variables" in window.huggingface) ||
+      !window.huggingface.variables ||
+      typeof window.huggingface.variables !== "object" ||
+      !("OAUTH_SCOPES" in window.huggingface.variables) ||
+      !window.huggingface.variables.OAUTH_SCOPES ||
+      typeof window.huggingface.variables.OAUTH_SCOPES !== "string"
+    ) {
+      throw new Error("Missing window.huggingface.variables.OAUTH_SCOPES");
+    }
+    const scopes = window.huggingface.variables.OAUTH_SCOPES;
     // prompt=consent to re-trigger the consent screen instead of silently redirecting
-
-    // @ts-expect-error window.huggingface is defined inside static Spaces.
-    const variables: Record<string, string> | null = (window.huggingface?.variables ?? null) as Record<string, string> | null;
-    window.location.href =
-      (await oauthLoginUrl({ scopes: variables?.OAUTH_SCOPES })) +
-      "&prompt=consent";
+    window.location.href = (await oauthLoginUrl({ scopes })) + "&prompt=consent";
   }
 }
