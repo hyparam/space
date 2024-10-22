@@ -20,7 +20,6 @@ function createAuthFromToken(token: string): AuthContextValue {
         /// the Authorization header can be overridden by the caller
         ...init.headers,
       };
-      console.log("fetching", input, init);
       return window.fetch(input, init);
     },
   };
@@ -48,11 +47,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     fetchOAuthToken()
       .then((token) => {
-        console.log("Got token", token);
         setAuth(createAuthFromToken(token));
       })
       .catch((e: unknown) => {
-        console.error("Failed to get token", e);
         setAuth(createEmptyAuth());
         console.error(e);
       });
