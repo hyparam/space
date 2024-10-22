@@ -42,6 +42,8 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
     }
   }
 
+  console.log("oauthResult", oauthResult);
+
   return oauthResult;
 }
 
