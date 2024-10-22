@@ -1,16 +1,19 @@
 import { createContext, useEffect, useState } from "react";
-import { fetchOAuthToken } from "../Login.tsx";
+import { fetchOAuth } from "../Login.tsx";
+import {  OAuthResult} from "@huggingface/hub";
 
 interface AuthContextValue {
+  oAuthResult?: OAuthResult;
   headers: Record<string, string>;
   fetch: typeof window.fetch;
 }
 
-function createAuthFromToken(token: string): AuthContextValue {
+function createAuthFromOAuthResult(oAuthResult: OAuthResult): AuthContextValue {  
   const headers = {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${oAuthResult.accessToken}`,
   };
   return {
+    oAuthResult,
     headers,
     fetch: async (input, init) => {
       if (init === undefined) init = {};
@@ -45,9 +48,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [auth, setAuth] = useState<AuthContextValue | undefined>(undefined);
 
   useEffect(() => {
-    fetchOAuthToken()
-      .then((token) => {
-        setAuth(createAuthFromToken(token));
+    fetchOAuth()
+      .then((oAuthResult) => {
+        if (!oAuthResult) {
+          setAuth(createEmptyAuth());
+          return;
+        }
+        if (oAuthResult.accessTokenExpiresAt < new Date()) {
+          console.error("Access token expired");
+          // TODO(SL): refresh token? delete the previous token?
+          setAuth(createEmptyAuth());
+          return;
+        }
+        setAuth(createAuthFromOAuthResult(oAuthResult));
       })
       .catch((e: unknown) => {
         setAuth(createEmptyAuth());

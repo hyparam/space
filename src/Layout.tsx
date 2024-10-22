@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from 'react'
 import {cn } from './utils.ts'
+import { login } from './Login.tsx'
 
 interface LayoutProps {
   children: ReactNode
@@ -35,7 +36,9 @@ export default function Layout({ children, className, progress, error, title }: 
       <div className={cn('content', className)}>
         {children}
       </div>
-      <div className={cn('error-bar', error && 'show-error')}>{errorMessage}</div>
+      <div className={cn('error-bar', error && 'show-error')}>{errorMessage}{
+        errorMessage?.includes('Invalid username or password') ? <a onClick={() => {login().catch(() => undefined)}}>Log in to HF</a>: null
+        }</div>
     </div>    
     {progress !== undefined && progress < 1 &&
       <div className={'progress-bar'} role='progressbar'>

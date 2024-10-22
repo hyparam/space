@@ -41,7 +41,7 @@ interface RepositoryProps {
 /**
  * Repository page
  */
-export default function Folder({ url }: RepositoryProps) {
+export default function Repository({ url }: RepositoryProps) {
   // State to hold file listing
   const [refs, setRefs] = useState<RefMetadata[]>();
   const [error, setError] = useState<Error>();

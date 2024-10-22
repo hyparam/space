@@ -1,12 +1,15 @@
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 import { changeQueryString } from "./huggingface.ts";
 import Search from "./Search.tsx";
+import { login, logout } from "./Login.tsx";
+import { AuthContext } from "./contexts/AuthContext.tsx";
 
 /**
  * Home page
  */
 export default function Home() {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const auth = useContext(AuthContext);
 
   function onUrlSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,16 +56,18 @@ export default function Home() {
         performance windowed table viewing.
       </p>
 
-      {/* <section>
-        Test OAuth
-        <pre>{JSON.parse(localStorage.getItem("oauth") ?? "null")}</pre>
-      </section> */}
-
       <section>
         <h3>Select a dataset on Hugging Face</h3>
         <p>Search for a dataset:</p>
         <Search></Search>
 
+        {
+          auth?.oAuthResult ? (
+            <p>Logged in as {auth.oAuthResult.userInfo.name}. <a onClick={() => {logout()}}>Log out</a></p>
+          ) : (
+            <p><a onClick={() => {login().catch(() => undefined)}}>Log in</a> to see your datasets</p>
+          )
+        }          
       </section>
       <section>
         <h3>Parquet URL</h3>

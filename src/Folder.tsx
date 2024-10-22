@@ -24,7 +24,6 @@ export default function Folder({ url }: FolderProps) {
 
   // Fetch files on component mount
   useEffect(() => {
-    console.log("Folder useEffect", url, auth);
     if (!auth) {
       // Auth not loaded yet
       return;
