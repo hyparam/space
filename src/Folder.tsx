@@ -1,35 +1,42 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { formatFileSize } from "./files.ts";
 import { listFiles, ListFileEntry } from "@huggingface/hub";
 import Layout, { Spinner } from "./Layout.tsx";
-import { cn, setFetchHeaders } from "./utils.ts";
+import { cn } from "./utils.ts";
 import { baseUrl, FolderUrl } from "./huggingface.ts";
 import Breadcrumb from "./Breadcrumb.tsx";
 import Link from "./Link.tsx";
+import { AuthContext } from "./contexts/AuthContext.tsx";
 
 interface FolderProps {
   url: FolderUrl;
-  headers?: Record<string, string>;
 }
 
 /**
  * Folder browser page
  */
-export default function Folder({ url, headers }: FolderProps) {
+export default function Folder({ url }: FolderProps) {
   // State to hold file listing
   const [files, setFiles] = useState<ListFileEntry[]>();
   const [error, setError] = useState<Error>();
   const listRef = useRef<HTMLUListElement>(null);
+  const auth = useContext(AuthContext);
 
   // Fetch files on component mount
   useEffect(() => {
+    console.log("Folder useEffect", url, auth);
+    if (!auth) {
+      // Auth not loaded yet
+      return;
+    }
+    const { fetch } = auth;
     async function fetchFiles() {
       const filesIterator = listFiles({
         repo: `datasets/${url.namespace}/${url.repo}`,
         revision: url.branch,
         path: url.path.replace(/^\//, ""), // remove leading slash if any
         // TODO(SL): pass expand: true, to get the date
-        fetch: setFetchHeaders(headers)
+        fetch
       })
       const files = []
       for await (const file of filesIterator) {
@@ -43,7 +50,7 @@ export default function Folder({ url, headers }: FolderProps) {
         setFiles([]);
         setError(error as Error);
       });
-  }, [url, headers]);
+  }, [url, auth]);
 
   const fileUrl = useCallback(
     (file: ListFileEntry) => {

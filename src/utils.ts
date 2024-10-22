@@ -13,19 +13,6 @@ interface AsyncBufferFromUrlOptions {
   headers?: Record<string, string>;
 }
 
-export function setFetchHeaders(
-  headers?: Record<string, string>
-): typeof fetch {
-  return (url, options) => {
-    const newOptions = {
-      ...options,
-      headers: { ...(headers ?? {}), ...options?.headers },
-    }
-    console.log("newOptions", newOptions)
-    return fetch(url, newOptions);
-  }
-}
-
 export async function asyncBufferFromUrl({
   url,
   byteLength,

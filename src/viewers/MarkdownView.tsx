@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Spinner } from '../Layout.tsx'
 import Markdown from '../Markdown.tsx'
 import ContentHeader from './ContentHeader.tsx'
-import { setFetchHeaders } from '../utils.ts'
+import { AuthContext } from '../contexts/AuthContext.tsx'
+
 
 enum LoadingState {
   NotLoaded,
@@ -12,22 +13,27 @@ enum LoadingState {
 
 interface ViewerProps {
   url: string
-  setError: (error: Error | undefined) => void
-  headers?: Record<string, string>
+  setError: (error: Error | undefined) => void  
 }
 
 /**
  * Markdown viewer component.
  */
-export default function MarkdownView({ url, setError, headers }: ViewerProps) {
+export default function MarkdownView({ url, setError }: ViewerProps) {
   const [loading, setLoading] = useState(LoadingState.NotLoaded)
   const [text, setText] = useState<string | undefined>()
+  const auth = useContext(AuthContext)
 
 
   useEffect(() => {
+    if (!auth) {
+      // Auth not loaded yet
+      return
+    }
+    const { fetch } = auth
     async function loadContent() {
       try {
-        const res = await setFetchHeaders(headers)(url)
+        const res = await fetch(url)
         const text = await res.text()
         setError(undefined)
         setText(text)
@@ -39,13 +45,13 @@ export default function MarkdownView({ url, setError, headers }: ViewerProps) {
       }
     }
 
-    setLoading(() => {
+    setLoading((loading) => {
       // use loading state to ensure we only load content once
-      // if (loading !== LoadingState.NotLoaded) return loading
+      if (loading !== LoadingState.NotLoaded) return loading
       loadContent().catch(() => undefined)
       return LoadingState.Loading
     })
-  }, [url, setError, headers])
+  }, [url, setError, auth])
 
   return <ContentHeader content={{ fileSize: text?.length }}>
     <Markdown className='markdown' text={text ?? ''} />

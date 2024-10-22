@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Spinner } from '../Layout.tsx'
 import ContentHeader from './ContentHeader.tsx'
 import { contentTypes, parseFileSize } from '../files.ts'
-import { setFetchHeaders } from '../utils.ts'
+import { AuthContext } from '../contexts/AuthContext.tsx'
 
 enum LoadingState {
   NotLoaded,
@@ -13,7 +13,6 @@ enum LoadingState {
 interface ViewerProps {
   url: string
   setError: (error: Error | undefined) => void
-  headers?: Record<string, string>
 }
 
 interface Content {
@@ -24,14 +23,20 @@ interface Content {
 /**
  * Image viewer component.
  */
-export default function ImageView({ url, setError, headers }: ViewerProps) {
+export default function ImageView({ url, setError }: ViewerProps) {
   const [loading, setLoading] = useState(LoadingState.NotLoaded)
   const [content, setContent] = useState<Content>()
+  const auth = useContext(AuthContext)
 
   useEffect(() => {
+    if (!auth) {
+      // Auth not loaded yet
+      return
+    }
+    const { fetch } = auth
     async function loadContent() {
       try {
-        const res = await setFetchHeaders(headers)(url)
+        const res = await fetch(url)
         const arrayBuffer = await res.arrayBuffer()
         // base64 encode and display image
         const b64 = arrayBufferToBase64(arrayBuffer)
@@ -47,13 +52,13 @@ export default function ImageView({ url, setError, headers }: ViewerProps) {
       }
     }
 
-    setLoading(() => {
+    setLoading((loading) => {
       // use loading state to ensure we only load content once
-      // if (loading !== LoadingState.NotLoaded) return loading
+      if (loading !== LoadingState.NotLoaded) return loading
       loadContent().catch(() => undefined)
       return LoadingState.Loading
     })
-  }, [url, setError, headers])
+  }, [url, setError, auth])
 
   return <ContentHeader content={content}>
     {content?.dataUri && <img
