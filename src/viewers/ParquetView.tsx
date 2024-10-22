@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { parquetDataFrame } from "../tableProvider.ts";
 import { Spinner } from "../Layout.tsx";
 import ContentHeader from "./ContentHeader.tsx";
-import { asyncBufferFromUrl, parquetMetadataAsync } from "hyparquet";
+import { parquetMetadataAsync } from "hyparquet";
 import { changeQueryString } from "../huggingface.ts";
+import { asyncBufferFromUrl } from "../utils.ts";
 
 enum LoadingState {
   NotLoaded,
@@ -15,8 +16,9 @@ enum LoadingState {
 interface ViewerProps {
   url: string;
   resolveUrl: string;
-  setProgress: (progress: number) => void;
-  setError: (error: Error) => void;
+  setProgress: (progress: number | undefined) => void;
+  setError: (error: Error | undefined) => void;
+  headers?: Record<string, string>;
 }
 
 interface Content {
@@ -32,6 +34,7 @@ export default function ParquetView({
   resolveUrl,
   setProgress,
   setError,
+  headers,
 }: ViewerProps) {
   const [loading, setLoading] = useState<LoadingState>(LoadingState.NotLoaded);
   const [content, setContent] = useState<Content>();
@@ -40,16 +43,18 @@ export default function ParquetView({
     async function loadParquetDataFrame() {
       try {
         setProgress(0.33);
-        const asyncBuffer = await asyncBufferFromUrl(resolveUrl);
-        const from = { url: resolveUrl, byteLength: asyncBuffer.byteLength };
+        const asyncBuffer = await asyncBufferFromUrl({url: resolveUrl, headers});
+        const from = { url: resolveUrl, byteLength: asyncBuffer.byteLength, headers };
         setProgress(0.66);
         const metadata = await parquetMetadataAsync(asyncBuffer);
         let dataframe = parquetDataFrame(from, metadata);
         dataframe = rowCache(dataframe);
         const fileSize = asyncBuffer.byteLength;
         setContent({ dataframe, fileSize });
+        setError(undefined)
       } catch (error) {
         setError(error as Error);
+        setContent(undefined);
       } finally {
         setLoading(LoadingState.Loaded);
         setProgress(1);
@@ -59,7 +64,7 @@ export default function ParquetView({
       setLoading(LoadingState.Loading);
       loadParquetDataFrame().catch(() => undefined);
     }
-  }, [loading, url, resolveUrl, setError, setProgress]);
+  }, [loading, url, resolveUrl, setError, setProgress, headers]);
 
   const onDoubleClickCell: (col: number, row: number) => void = (
     col: number,
@@ -70,7 +75,7 @@ export default function ParquetView({
     );
   };
 
-  const headers = (
+  const headersSpan = (
     <>
       {content?.dataframe && (
         <span>{content.dataframe.numRows.toLocaleString("en-US")} rows</span>
@@ -79,7 +84,7 @@ export default function ParquetView({
   );
 
   return (
-    <ContentHeader content={content} headers={headers}>
+    <ContentHeader content={content} headers={headersSpan}>
       {content?.dataframe && (
         <HighTable
           data={content.dataframe}

@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { parquetDataFrame } from './tableProvider.js'
 import Layout from './Layout.js'
-import { asyncBufferFromUrl, parquetMetadataAsync } from 'hyparquet'
+import { parquetMetadataAsync } from 'hyparquet'
 import { NonHfUrl, FileUrl } from './huggingface.ts'
 import Breadcrumb from './Breadcrumb.tsx'
+import { asyncBufferFromUrl } from './utils.ts'
 
 interface CellProps {
   url: NonHfUrl | FileUrl
   row: number
   col: number
+  headers?: Record<string, string>
 }
 
 enum LoadingState {
@@ -20,7 +22,7 @@ enum LoadingState {
 /**
  * Cell viewer displays a single cell from a table.
  */
-export default function CellView({ url, row, col }: CellProps) {
+export default function CellView({ url, row, col, headers }: CellProps) {
   const [loading, setLoading] = useState<LoadingState>(LoadingState.NotLoaded)
   const [text, setText] = useState<string | undefined>()
   const [progress, setProgress] = useState<number>()
@@ -38,8 +40,8 @@ export default function CellView({ url, row, col }: CellProps) {
         // TODO: handle first row > 100kb
         setProgress(0.25)
         const sourceUrl = url.kind === "file" ? url.resolveUrl: url.raw
-        const asyncBuffer = await asyncBufferFromUrl(sourceUrl)
-        const from = { url: sourceUrl, byteLength: asyncBuffer.byteLength }
+        const asyncBuffer = await asyncBufferFromUrl({url: sourceUrl, headers})
+        const from = { url: sourceUrl, byteLength: asyncBuffer.byteLength, headers }
         setProgress(0.5)
         const metadata = await parquetMetadataAsync(asyncBuffer)
         setProgress(0.75)
@@ -48,8 +50,10 @@ export default function CellView({ url, row, col }: CellProps) {
         const colName = df.header[col]
         const text = stringify(rows[0][colName])
         setText(text)
+        setError(undefined)
       } catch (error) {
         setError(error as Error)
+        setText(undefined)
       } finally {
         setLoading(LoadingState.Loaded)
         setProgress(undefined)
@@ -61,7 +65,7 @@ export default function CellView({ url, row, col }: CellProps) {
       setLoading(LoadingState.Loading)
       loadCellData().catch(() => undefined)
     }
-  }, [url, col, row, loading, setError])
+  }, [url, col, row, loading, setError, headers])
 
   return <Layout progress={progress} error={error} title={fileName}>
     <Breadcrumb url={url} />

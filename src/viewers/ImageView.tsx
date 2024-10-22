@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { Spinner } from '../Layout.tsx'
 import ContentHeader from './ContentHeader.tsx'
 import { contentTypes, parseFileSize } from '../files.ts'
+import { setFetchHeaders } from '../utils.ts'
 
 enum LoadingState {
   NotLoaded,
@@ -10,7 +12,8 @@ enum LoadingState {
 
 interface ViewerProps {
   url: string
-  setError: (error: Error) => void
+  setError: (error: Error | undefined) => void
+  headers?: Record<string, string>
 }
 
 interface Content {
@@ -21,40 +24,44 @@ interface Content {
 /**
  * Image viewer component.
  */
-export default function ImageView({ url, setError }: ViewerProps) {
+export default function ImageView({ url, setError, headers }: ViewerProps) {
   const [loading, setLoading] = useState(LoadingState.NotLoaded)
   const [content, setContent] = useState<Content>()
 
   useEffect(() => {
     async function loadContent() {
       try {
-        const res = await fetch(url)
+        const res = await setFetchHeaders(headers)(url)
         const arrayBuffer = await res.arrayBuffer()
         // base64 encode and display image
         const b64 = arrayBufferToBase64(arrayBuffer)
         const dataUri = `data:${contentType(url)};base64,${b64}`
         const fileSize = parseFileSize(res.headers)
         setContent({ dataUri, fileSize })
+        setError(undefined)
       } catch (error) {
+        setContent(undefined)
         setError(error as Error)
       } finally {
         setLoading(LoadingState.Loaded)
       }
     }
 
-    setLoading(loading => {
+    setLoading(() => {
       // use loading state to ensure we only load content once
-      if (loading !== LoadingState.NotLoaded) return loading
+      // if (loading !== LoadingState.NotLoaded) return loading
       loadContent().catch(() => undefined)
       return LoadingState.Loading
     })
-  }, [url, loading, setError])
+  }, [url, setError, headers])
 
   return <ContentHeader content={content}>
     {content?.dataUri && <img
       alt={url}
       className='image'
       src={content.dataUri} />}
+    
+    {loading && <Spinner className='center' />}
   </ContentHeader>
 }
 

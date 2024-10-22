@@ -2,19 +2,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { formatFileSize } from "./files.ts";
 import { listFiles, ListFileEntry } from "@huggingface/hub";
 import Layout, { Spinner } from "./Layout.tsx";
-import { cn } from "./utils.ts";
+import { cn, setFetchHeaders } from "./utils.ts";
 import { baseUrl, FolderUrl } from "./huggingface.ts";
 import Breadcrumb from "./Breadcrumb.tsx";
 import Link from "./Link.tsx";
 
 interface FolderProps {
   url: FolderUrl;
+  headers?: Record<string, string>;
 }
 
 /**
  * Folder browser page
  */
-export default function Folder({ url }: FolderProps) {
+export default function Folder({ url, headers }: FolderProps) {
   // State to hold file listing
   const [files, setFiles] = useState<ListFileEntry[]>();
   const [error, setError] = useState<Error>();
@@ -28,19 +29,21 @@ export default function Folder({ url }: FolderProps) {
         revision: url.branch,
         path: url.path.replace(/^\//, ""), // remove leading slash if any
         // TODO(SL): pass expand: true, to get the date
+        fetch: setFetchHeaders(headers)
       })
       const files = []
       for await (const file of filesIterator) {
         files.push(file)
       }
       setFiles(files)
+      setError(undefined)
     }
     fetchFiles()
       .catch((error: unknown) => {
         setFiles([]);
         setError(error as Error);
       });
-  }, [url]);
+  }, [url, headers]);
 
   const fileUrl = useCallback(
     (file: ListFileEntry) => {

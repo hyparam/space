@@ -6,12 +6,13 @@ import Breadcrumb from './Breadcrumb.tsx'
 
 interface FileProps {
   url: NonHfUrl | FileUrl
+  headers?: Record<string, string>
 }
 
 /**
  * File viewer page
  */
-export default function File({ url }: FileProps) {
+export default function File({ url, headers }: FileProps) {
   const [progress, setProgress] = useState<number>()
   const [error, setError] = useState<Error>()
 
@@ -24,6 +25,6 @@ export default function File({ url }: FileProps) {
   return <Layout progress={progress} error={error} title={fileName}>
     <Breadcrumb url={url} />
     {/* TODO(SL): add 'layout' option, like in hyparam demo, to see Parquet metadata and layout */}
-    <Viewer url={url.raw} resolveUrl={resolveUrl} setProgress={setProgress} setError={setError} />
+    <Viewer url={url.raw} resolveUrl={resolveUrl} setProgress={setProgress} setError={setError} headers={headers} />
   </Layout>
 }

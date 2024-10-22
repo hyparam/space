@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Spinner } from '../Layout.tsx'
 import ContentHeader from './ContentHeader.tsx'
+import { setFetchHeaders } from '../utils.ts'
 
 enum LoadingState {
   NotLoaded,
@@ -10,46 +11,50 @@ enum LoadingState {
 
 interface ViewerProps {
   url: string
-  setError: (error: Error) => void
-  setProgress: (progress: number) => void
+  setError: (error: Error | undefined) => void
+  setProgress: (progress: number | undefined) => void
+  headers?: Record<string, string>
 }
 
 /**
  * Text viewer component.
  */
-export default function TextView({ url, setError }: ViewerProps) {
+export default function TextView({ url, setError, headers }: ViewerProps) {
   const [loading, setLoading] = useState(LoadingState.NotLoaded)
-  const [text, setText] = useState<string | undefined>()
+  const [text, setText] = useState<string>()
   const textRef = useRef<HTMLPreElement>(null)
 
   // Load plain text content
   useEffect(() => {
+    console.log('headers', headers)
     async function loadContent() {
       try {
-        const res = await fetch(url)
+        const res = await setFetchHeaders(headers)(url)
         const text = await res.text()
-        setText(text)
+        setError(undefined)
+        setText(text)        
       } catch (error) {
         setError(error as Error)
+        setText(undefined)
       } finally {
         setLoading(LoadingState.Loaded)
       }
     }
 
-    setLoading(loading => {
+    setLoading(()=> {
       // use loading state to ensure we only load content once
-      if (loading !== LoadingState.NotLoaded) return loading
+      // if (loading !== LoadingState.NotLoaded) return loading
       loadContent().catch(() => undefined)
       return LoadingState.Loading
     })
-  }, [url, loading, setError])
+  }, [url, setError, headers])
 
-  const headers = <>
+  const headersSpan = <>
     <span>{text ? newlines(text) : 0} lines</span>
   </>
 
   // Simple text viewer
-  return <ContentHeader content={{ fileSize: text?.length }} headers={headers}>
+  return <ContentHeader content={{ fileSize: text?.length }} headers={headersSpan}>
     <code className='text' ref={textRef}>
       {text}
     </code>

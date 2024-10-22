@@ -92,6 +92,8 @@ export const contentTypes: Record<string, string> = {
   jpeg: "image/jpeg",
   gif: "image/gif",
   svg: "image/svg+xml",
+  tiff: "image/tiff",
+  webp: "image/webp",
 };
 
-export const imageTypes = [".png", ".jpg", ".jpeg", ".gif", ".svg"];
+export const imageTypes = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".tiff", ".webp"];

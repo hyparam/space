@@ -4,6 +4,7 @@ import { ColumnData, FileMetaData, ParquetReadOptions } from 'hyparquet'
 export interface AsyncBufferFrom {
   url: string
   byteLength: number
+  headers?: Record<string, string>
 }
 // Same as ParquetReadOptions, but AsyncBufferFrom instead of AsyncBuffer
 export interface ParquetReadWorkerOptions extends Omit<ParquetReadOptions, 'file'> {

@@ -5,7 +5,8 @@ import type {
   ParquetReadWorkerOptions,
   Row,
 } from "./types.ts";
-import { asyncBufferFromUrl, AsyncBuffer, ColumnData } from "hyparquet";
+import { AsyncBuffer, ColumnData } from "hyparquet";
+import { asyncBufferFromUrl } from "../utils.ts";
 
 let worker: Worker | undefined;
 let nextQueryId = 0;
@@ -84,9 +85,7 @@ export async function asyncBufferFrom(
   const key = JSON.stringify(from);
   const cached = cache.get(key);
   if (cached) return cached;
-  const asyncBuffer = asyncBufferFromUrl(from.url, from.byteLength).then(
-    cachedAsyncBuffer
-  );
+  const asyncBuffer = asyncBufferFromUrl(from).then(cachedAsyncBuffer);
   cache.set(key, asyncBuffer);
   return asyncBuffer;
 }
@@ -98,6 +97,7 @@ export function compare<T>(a: T, b: T): number {
   return 1 // TODO: how to handle nulls?
 }
 
+// TODO(SL): invalidate the cache if the token is created, changed, or deleted? maybe just reload the page
 // TODO(SL): once the types in cachedAsyncBuffer are fixed, import all the following from hyparquet
 type Awaitable<T> = T | Promise<T>;
 
