@@ -15,32 +15,32 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
     localStorage.setItem("oauth", JSON.stringify(oauthResult));
   }
 
-  if (oauthResult && oauthResult.state) {
-    try {
-      const state: unknown = JSON.parse(oauthResult.state);
-      if (
-        typeof state !== "object" ||
-        state === null ||
-        !("redirect" in state)
-      ) {
-        throw new Error("Invalid state");
-      }
-      const redirect = state.redirect;
-      if (!(typeof redirect === "string")) {
-        throw new Error("Invalid redirect URL: not a string");
-      }
-      const url = new URL(redirect);
-      if (url.origin !== window.location.origin) {
-        throw new Error("Invalid redirect URL: different origin");
-      }
-      localStorage.setItem("oauth", JSON.stringify({...oauthResult, state: null}));
-      // ^ avoid infinite loop
-      window.location.href = url.href;
-    } catch (error) {
-      // silently ignore
-      console.error(error);
-    }
-  }
+  // if (oauthResult && oauthResult.state) {
+  //   try {
+  //     const state: unknown = JSON.parse(oauthResult.state);
+  //     if (
+  //       typeof state !== "object" ||
+  //       state === null ||
+  //       !("redirect" in state)
+  //     ) {
+  //       throw new Error("Invalid state");
+  //     }
+  //     const redirect = state.redirect;
+  //     if (!(typeof redirect === "string")) {
+  //       throw new Error("Invalid redirect URL: not a string");
+  //     }
+  //     const url = new URL(redirect);
+  //     if (url.origin !== window.location.origin) {
+  //       throw new Error("Invalid redirect URL: different origin");
+  //     }
+  //     localStorage.setItem("oauth", JSON.stringify({...oauthResult, state: null}));
+  //     // ^ avoid infinite loop
+  //     window.location.href = url.href;
+  //   } catch (error) {
+  //     // silently ignore
+  //     console.error(error);
+  //   }
+  // }
 
   return oauthResult;
 }
