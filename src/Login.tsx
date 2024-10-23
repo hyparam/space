@@ -51,7 +51,7 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
 
 export async function login() {
   const options = {
-    redirectUrl: new URL(window.location.href).origin + "/",
+    redirectUrl: new URL(window.location.href).origin + "/index.html",
     // pass a state to be returned in the call to `oauthLogin` after the redirect
     state: JSON.stringify({ redirect: window.location.href }),
     ...(     
