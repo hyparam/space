@@ -6,6 +6,7 @@ import { NonHfUrl, FileUrl } from "./huggingface.ts";
 import Breadcrumb from "./Breadcrumb.tsx";
 import { asyncBufferFromUrl } from "./utils.ts";
 import { AuthContext } from "./contexts/AuthContext.tsx";
+import { asyncRows } from 'hightable'
 
 interface CellProps {
   url: NonHfUrl | FileUrl;
@@ -60,8 +61,10 @@ export default function CellView({ url, row, col }: CellProps) {
         setProgress(0.75);
         const df = parquetDataFrame(from, metadata);
         const rows = await df.rows(row, row + 1);
-        const colName = df.header[col];
-        const text = stringify(rows[0][colName]);
+        // Convert to AsyncRows
+        const asyncRow = asyncRows(rows, 1, df.header)[0]
+        // Await cell data
+        const text = await asyncRow[df.header[col]].then(stringify)
         setText(text);
         setError(undefined);
       } catch (error) {
