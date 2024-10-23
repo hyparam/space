@@ -47,7 +47,7 @@ export default function Repository({ url }: RepositoryProps) {
   const [error, setError] = useState<Error>();
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Fetch files on component mount
+  // Fetch refs on component mount
   useEffect(() => {
     listRefs(url.namespace, url.repo)
       .then(setRefs)

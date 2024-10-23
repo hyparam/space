@@ -102,9 +102,10 @@ export function parseUrl(url: string): ParsedUrl {
   throw new Error("Unsupported Hugging Face URL");
 }
 
-export interface UrlPart {
+export interface UrlPart {  
   url: string;
   text: string;
+  branch?: string;
 }
 
 export const baseUrl = "https://huggingface.co/datasets";
@@ -123,7 +124,7 @@ export function getUrlParts(url: ParsedUrl): UrlPart[] {
     //   text: url.namespace,
     // });
     const repoUrl = `${baseUrl}/${url.namespace}/${url.repo}`;
-    const urlParts = [{ url: repoUrl, text: repoUrl }];
+    const urlParts: UrlPart[] = [{ url: repoUrl, text: repoUrl }];
     if (url.kind === "repo") {
       return urlParts;
     }
@@ -131,6 +132,7 @@ export function getUrlParts(url: ParsedUrl): UrlPart[] {
     urlParts.push({
       url: `${baseUrl}/${url.namespace}/${url.repo}/tree/${url.branch}`,
       text: `${url.action}/${url.branch}`,
+      branch: url.branch,
     });
     const pathParts = url.path.split("/").filter((part) => part !== "");
     const lastPart = pathParts.at(-1);

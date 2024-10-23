@@ -29,11 +29,12 @@ export interface RefMetadata extends RefResponse {
  */
 export async function listRefs(
   namespace: string,
-  repo: string
+  repo: string,
+  init?: RequestInit
 ): Promise<RefMetadata[]> {
   // TODO(SL): support private/gated repos
   const response = await fetch(
-    `https://huggingface.co/api/datasets/${namespace}/${repo}/refs`
+    `https://huggingface.co/api/datasets/${namespace}/${repo}/refs`, init
   );
   if (!response.ok) {
     throw new Error(`HTTP error ${response.status.toString()}`);
