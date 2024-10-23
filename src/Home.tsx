@@ -3,6 +3,7 @@ import { changeQueryString } from "./huggingface.ts";
 import Search from "./Search.tsx";
 import { login, logout } from "./Login.tsx";
 import { AuthContext } from "./contexts/AuthContext.tsx";
+import HFLoginIcon from './assets/sign-in-with-huggingface-lg.svg';
 
 /**
  * Home page
@@ -58,16 +59,28 @@ export default function Home() {
 
       <section>
         <h3>Select a dataset on Hugging Face</h3>
-        <p>Search for a dataset:</p>
-        <Search></Search>
-
         {          
           auth?.oAuthResult ? (
-            <p>Logged in as {auth.oAuthResult.userInfo.name}. <a onClick={() => {logout()}}>Log out</a></p>
+            <p>Logged in as 
+              <img src={auth.oAuthResult.userInfo.avatarUrl} alt={auth.oAuthResult.userInfo.name} style={{width: "1rem", height: "1rem", borderRadius: "50%", margin: "0 0.5rem"}} />
+              {auth.oAuthResult.userInfo.name} (<a onClick={() => {logout()}}>Log out</a>). You can search your private and gated datasets.</p>
           ) : (
-            <p><a onClick={() => {login().catch(() => undefined)}}>Log in</a> to see your datasets</p>
+            <p>
+              <p>Log in to search your private and gated datasets</p><a
+              onClick={() => {
+                login().catch(() => undefined);
+              }}
+            >
+              
+              <img
+                src={HFLoginIcon}
+                alt="Sign in with Hugging Face"
+              />
+            </a></p>
           )
         }
+        <p>Search for  dataset:</p>
+        <Search></Search>
       </section>
       <section>
         <h3>Parquet URL</h3>

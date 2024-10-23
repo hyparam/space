@@ -54,12 +54,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setAuth(createEmptyAuth());
           return;
         }
-        if (oAuthResult.accessTokenExpiresAt < new Date()) {
-          console.error("Access token expired");
-          // TODO(SL): refresh token? delete the previous token?
-          setAuth(createEmptyAuth());
-          return;
-        }
         setAuth(createAuthFromOAuthResult(oAuthResult));
       })
       .catch((e: unknown) => {

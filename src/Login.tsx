@@ -11,6 +11,12 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
   ) as OAuthResult | false | null;
   oauthResult ||= await oauthHandleRedirectIfPresent();
 
+  if (oauthResult && (new Date(oauthResult.accessTokenExpiresAt) < new Date())) {
+    console.warn("Access token expired");
+    localStorage.removeItem("oauth");
+    return false;
+  }
+
   if (oauthResult) {
     localStorage.setItem("oauth", JSON.stringify(oauthResult));
   }
@@ -21,15 +27,15 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
       if (
         typeof state !== "object" ||
         state === null ||
-        !("redirect" in state)
+        !("urlBeforeLogin" in state)
       ) {
         throw new Error("Invalid state");
       }
-      const redirect = state.redirect;
-      if (!(typeof redirect === "string")) {
+      const urlBeforeLogin = state.urlBeforeLogin;
+      if (!(typeof urlBeforeLogin === "string")) {
         throw new Error("Invalid redirect URL: not a string");
       }
-      const url = new URL(redirect);
+      const url = new URL(urlBeforeLogin);
       if (url.origin !== window.location.origin) {
         throw new Error("Invalid redirect URL: different origin");
       }
@@ -53,10 +59,9 @@ export async function login() {
   const options = {
     state,
     ...("huggingface" in window
-      // default options work out of the box for HF spaces
-      ? undefined
-      : 
-        {
+      ? // default options work out of the box for HF spaces
+        undefined
+      : {
           state,
           redirectUrl: new URL(window.location.href).origin + "/",
           clientId: "921c40c6-531f-419e-9aa8-3d1cc2606e5e",
