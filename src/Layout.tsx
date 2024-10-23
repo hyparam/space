@@ -44,7 +44,7 @@ export default function Layout({
         <div className={cn("error-bar", error && "show-error")}>
           {errorMessage}
           {errorMessage?.includes("Invalid username or password") ? (
-            <p><a
+            <p style={{marginTop: 0, padding: "0.5rem 0"}}><a
               onClick={() => {
                 login().catch(() => undefined);
               }}
