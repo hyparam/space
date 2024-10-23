@@ -9,10 +9,8 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
   let oauthResult: OAuthResult | false | null = JSON.parse(
     localStorage.getItem("oauth") ?? "null"
   ) as OAuthResult | false | null;
-  console.log("oauthResult A", oauthResult);
   oauthResult ||= await oauthHandleRedirectIfPresent();
-  console.log("oauthResult B", oauthResult);
-  
+
   if (oauthResult) {
     localStorage.setItem("oauth", JSON.stringify(oauthResult));
   }
@@ -35,7 +33,10 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
       if (url.origin !== window.location.origin) {
         throw new Error("Invalid redirect URL: different origin");
       }
-      localStorage.setItem("oauth", JSON.stringify({...oauthResult, state: null}));
+      localStorage.setItem(
+        "oauth",
+        JSON.stringify({ ...oauthResult, state: null })
+      );
       // ^ avoid infinite loop
       window.location.href = url.href;
     } catch (error) {
@@ -43,33 +44,32 @@ export async function fetchOAuth(): Promise<OAuthResult | false> {
       console.error(error);
     }
   }
-
-  console.log("oauthResult C", oauthResult);
-
   return oauthResult;
 }
 
 export async function login() {
+  // pass a state to be returned in the call to `oauthLogin` after the redirect
+  const state = JSON.stringify({ urlBeforeLogin: window.location.href });
   const options = {
-    redirectUrl: new URL(window.location.href).origin + "/index.html",
-    // pass a state to be returned in the call to `oauthLogin` after the redirect
-    state: JSON.stringify({ redirect: window.location.href }),
-    ...(     
-      
-      "huggingface" in window
-      ? {
-          // static space: no need to pass clientId and scopes
-        }
-      : {
-          clientId: "921c40c6-531f-419e-9aa8-3d1cc2606e5e", // obtained by creating an app at https://huggingface.co/settings/applications
-          // TODO(SL): don't hardcode the clientId
+    state,
+    ...("huggingface" in window
+      // default options work out of the box for HF spaces
+      ? undefined
+      : 
+        {
+          state,
+          redirectUrl: new URL(window.location.href).origin + "/",
+          clientId: "921c40c6-531f-419e-9aa8-3d1cc2606e5e",
+          // TODO(SL): ^ don't hardcode the clientId (obtained by creating an app at https://huggingface.co/settings/applications)
           scopes: "openid profile read-repos",
         }),
   };
   // prompt=consent to re-trigger the consent screen instead of silently redirecting
-  // TODO(SL): remove the consent screen? what does it mean?
-  const url = (await oauthLoginUrl(options)) + "&prompt=consent"
-  console.log("login url", url);
+  // Maybe it's annoying? If we remove it, it's faster, but we lose the ability to chose the orgs to share with
+  // > option 1: always show (ie. include `prompt=consent` in the URL)
+  // option 2: don't show it in Log In, but add an alternative link that uses `prompt=consent` (e.g. "Change the authorized orgs")
+  // option 3: remove `prompt=consent` and let the user revoke the app in their settings (https://huggingface.co/settings/applications)
+  const url = (await oauthLoginUrl(options)) + "&prompt=consent";
   window.location.href = url;
 }
 
