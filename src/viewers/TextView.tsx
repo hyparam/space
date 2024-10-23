@@ -35,6 +35,11 @@ export default function TextView({ url, setError }: ViewerProps) {
       try {
         const res = await fetch(url)
         const text = await res.text()
+        if (res.status == 401) {
+          setError(new Error(text))
+          setText(undefined)
+          return
+        }
         setError(undefined)
         setText(text)        
       } catch (error) {

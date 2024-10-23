@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { cn } from "./utils.ts";
 import { login } from "./Login.tsx";
-import HFLoginIcon from './assets/sign-in-with-huggingface-sm.svg';
+import HFLoginIcon from "./assets/sign-in-with-huggingface-sm.svg";
 
 interface LayoutProps {
   children: ReactNode;
@@ -43,17 +43,20 @@ export default function Layout({
         <div className={cn("content", className)}>{children}</div>
         <div className={cn("error-bar", error && "show-error")}>
           {errorMessage}
-          {errorMessage?.includes("Invalid username or password") ? (
-            <p style={{marginTop: 0, padding: "0.5rem 0"}}><a
-              onClick={() => {
-                login().catch(() => undefined);
-              }}
-            >
-              <img
-                src={HFLoginIcon}
-                alt="Sign in with Hugging Face"
-              />
-            </a></p>
+          {[
+            "Invalid username or password",
+            "Please log in",
+            "fetch head failed 401",
+          ].some((text) => errorMessage?.includes(text)) ? (
+            <p style={{ marginTop: 0, padding: "0.5rem 0" }}>
+              <a
+                onClick={() => {
+                  login().catch(() => undefined);
+                }}
+              >
+                <img src={HFLoginIcon} alt="Sign in with Hugging Face" />
+              </a>
+            </p>
           ) : null}
         </div>
       </div>

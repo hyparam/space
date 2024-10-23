@@ -37,6 +37,12 @@ export default function ImageView({ url, setError }: ViewerProps) {
     async function loadContent() {
       try {
         const res = await fetch(url)
+        if (res.status == 401) {
+          const text = await res.text()
+          setError(new Error(text))
+          setContent(undefined)
+          return
+        }
         const arrayBuffer = await res.arrayBuffer()
         // base64 encode and display image
         const b64 = arrayBufferToBase64(arrayBuffer)
