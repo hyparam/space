@@ -2,7 +2,6 @@ import { useState } from 'react'
 import Layout from './Layout.tsx'
 import Viewer from './Viewer.tsx'
 import { NonHfUrl, FileUrl } from './huggingface.ts'
-import Breadcrumb from './Breadcrumb.tsx'
 
 interface FileProps {
   url: NonHfUrl | FileUrl
@@ -21,8 +20,7 @@ export default function File({ url }: FileProps) {
   if (path.length < 1) throw new Error('Invalid URL path')
   const fileName = path.at(-1);
 
-  return <Layout progress={progress} error={error} title={fileName}>
-    <Breadcrumb url={url} />
+  return <Layout progress={progress} error={error} title={fileName} url={url}>    
     {/* TODO(SL): add 'layout' option, like in hyparam demo, to see Parquet metadata and layout */}
     <Viewer url={url.raw} resolveUrl={resolveUrl} setProgress={setProgress} setError={setError} />
   </Layout>

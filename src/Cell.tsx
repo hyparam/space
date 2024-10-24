@@ -3,7 +3,6 @@ import { parquetDataFrame } from "./tableProvider.js";
 import Layout from "./Layout.js";
 import { parquetMetadataAsync } from "hyparquet";
 import { NonHfUrl, FileUrl } from "./huggingface.ts";
-import Breadcrumb from "./Breadcrumb.tsx";
 import { asyncBufferFromUrl } from "./utils.ts";
 import { AuthContext } from "./contexts/AuthContext.tsx";
 import { asyncRows } from 'hightable'
@@ -84,10 +83,7 @@ export default function CellView({ url, row, col }: CellProps) {
   }, [url, col, row, loading, setError, auth]);
 
   return (
-    <Layout progress={progress} error={error} title={fileName}>
-      <Breadcrumb url={url} />
-
-      {/* <Highlight text={text || ''} /> */}
+    <Layout progress={progress} error={error} title={fileName} url={url}>
       <pre className="viewer text">{text}</pre>
     </Layout>
   );

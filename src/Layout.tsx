@@ -2,8 +2,11 @@ import { ReactNode, useEffect } from "react";
 import { cn } from "./utils.ts";
 import { login } from "./Login.tsx";
 import HFLoginIcon from "./assets/sign-in-with-huggingface-sm.svg";
+import { ParsedUrl } from "./huggingface.ts";
+import Breadcrumb from "./Breadcrumb.tsx";
 
 interface LayoutProps {
+  url?: ParsedUrl;
   children: ReactNode;
   className?: string;
   progress?: number;
@@ -16,6 +19,7 @@ interface LayoutProps {
  * Content div style can be overridden by className prop.
  *
  * @param props
+ * @param props.url - current URL, parsed
  * @param props.children - content to display inside the layout
  * @param props.className - additional class names to apply to the content container
  * @param props.progress - progress bar value
@@ -23,6 +27,7 @@ interface LayoutProps {
  * @param props.title - page title
  */
 export default function Layout({
+  url,
   children,
   className,
   progress,
@@ -38,8 +43,11 @@ export default function Layout({
 
   return (
     <main className="main">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <div className="content-container">
+        {url && <div className={"content-header"}>
+          <Breadcrumb url={url} />
+        </div>}
         <div className={cn("content", className)}>{children}</div>
         <div className={cn("error-bar", error && "show-error")}>
           {errorMessage}
@@ -69,20 +77,20 @@ export default function Layout({
   );
 }
 
-function Sidebar() {
-  return (
-    <nav className="nav">
-      <a
-        className="brand"
-        href="https://hyperparam.app"
-        target="_blank"
-        rel="noreferrer"
-      >
-        hyperparam
-      </a>
-    </nav>
-  );
-}
+// function Sidebar() {
+//   return (
+//     <nav className="nav">
+//       <a
+//         className="brand"
+//         href="https://hyperparam.app"
+//         target="_blank"
+//         rel="noreferrer"
+//       >
+//         hyperparam
+//       </a>
+//     </nav>
+//   );
+// }
 
 export function Spinner({ className }: { className: string }) {
   return <div className={cn("spinner", className)}></div>;

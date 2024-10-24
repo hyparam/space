@@ -40,7 +40,7 @@ export default function Search() {
   return (
     <>
       <input type="search" onChange={onChange} />
-      <ul className="ref-list">
+      <ul className="dataset-list">
         {datasets.map((dataset) => (
           <li key={dataset.name} style={{ fontSize: "0.9rem" }}>
             <Link url={`${baseUrl}/${dataset.name}`}>{dataset.name}</Link>
