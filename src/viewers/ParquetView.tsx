@@ -76,7 +76,7 @@ export default function ParquetView({
       setLoading(LoadingState.Loading);
       loadParquetDataFrame().catch(() => undefined);
     }
-  }, [loading, url, resolveUrl, setError, setProgress, auth]);
+  }, [loading, resolveUrl, setError, setProgress, auth]);
 
   const onDoubleClickCell: (col: number, row: number) => void = (
     col: number,
@@ -99,6 +99,7 @@ export default function ParquetView({
     <ContentHeader content={content} headers={headersSpan}>
       {content?.dataframe && (
         <HighTable
+          cacheKey={resolveUrl}
           data={content.dataframe}
           onDoubleClickCell={onDoubleClickCell}
           onError={setError}
