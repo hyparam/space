@@ -65,6 +65,7 @@ export default function Breadcrumb({ url }: BreadcrumbProps) {
           );
         })}
       </div>
+      <a href={url.raw} target="_blank" rel="noreferrer" className="external"></a>
       {"branch" in url && refs && (
         <Dropdown className="branch-selector">
           {refs.map((ref, index) => {
