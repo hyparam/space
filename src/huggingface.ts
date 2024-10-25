@@ -105,7 +105,6 @@ export function parseUrl(url: string): ParsedUrl {
 export interface UrlPart {  
   url: string;
   text: string;
-  branch?: string;
 }
 
 export const baseUrl = "https://huggingface.co/datasets";
@@ -118,23 +117,14 @@ export function getUrlParts(url: ParsedUrl): UrlPart[] {
     if (url.kind === "base") {
       return [{ url: baseUrl, text: baseUrl }]
     }
-    // TODO(SL): enable a route for the namespace?
-    // urlParts.push({
-    //   url: `${baseUrl}/${url.namespace}`,
-    //   text: url.namespace,
-    // });
-    const repoUrl = `${baseUrl}/${url.namespace}/${url.repo}`;
-    const urlParts: UrlPart[] = [{ url: repoUrl, text: repoUrl }];
     if (url.kind === "repo") {
-      return urlParts;
+      const repoUrl = `${baseUrl}/${url.namespace}/${url.repo}`;
+      return [{ url: repoUrl, text: repoUrl }];
     }
+    const branchUrl = `${baseUrl}/${url.namespace}/${url.repo}/tree/${url.branch}/`;
+    const urlParts: UrlPart[] = [{ url: branchUrl, text: branchUrl }];
 
-    urlParts.push({
-      url: `${baseUrl}/${url.namespace}/${url.repo}/tree/${url.branch}`,
-      text: `${url.action}/${url.branch}`,
-      branch: url.branch,
-    });
-    const pathParts = url.path.split("/").filter((part) => part !== "");
+    const pathParts = url.path.split("/").filter(d => d.length > 0);
     const lastPart = pathParts.at(-1);
     if (!lastPart) {
       return urlParts;
@@ -144,7 +134,7 @@ export function getUrlParts(url: ParsedUrl): UrlPart[] {
         url: `${baseUrl}/${url.namespace}/${url.repo}/tree/${
           url.branch
         }/${pathParts.slice(0, i + 1).join("/")}`,
-        text: pathParts[i],
+        text: pathParts[i] + '/',
       });
     }
     urlParts.push({

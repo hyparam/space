@@ -57,35 +57,7 @@ export default function Breadcrumb({ url }: BreadcrumbProps) {
     <nav className="top-header">
       <a href="/" className="home"></a>
       <div className="path">
-        {getUrlParts(url).map(({ url: href, text, branch }, i) => {
-          if ("branch" in url && url.branch === branch && refs) {
-            const prefix = text.split(branch)[0];
-            const prefixLink =
-              prefix.length > 0 ? (
-                <Link url={href} key={i}>
-                  {prefix}
-                </Link>
-              ) : undefined;
-            return (
-              <>
-                {prefixLink}
-                <Dropdown label={decodeURIComponent(branch)} key={i}>
-                  {refs.map((ref, index) => {
-                    const refLink = getRefLink(ref);
-                    if (!refLink) {
-                      return null;
-                    }
-                    const { refUrl, pathElement } = refLink;
-                    return (
-                      <LinkButton url={refUrl} key={index}>
-                        {pathElement}
-                      </LinkButton>
-                    );
-                  })}
-                </Dropdown>
-              </>
-            );
-          }
+        {getUrlParts(url).map(({ url: href, text }, i) => {
           return (
             <Link url={href} key={i}>
               {text}
@@ -93,6 +65,22 @@ export default function Breadcrumb({ url }: BreadcrumbProps) {
           );
         })}
       </div>
+      {"branch" in url && refs && (
+        <Dropdown className="branch-selector">
+          {refs.map((ref, index) => {
+            const refLink = getRefLink(ref);
+            if (!refLink) {
+              return null;
+            }
+            const { refUrl, pathElement } = refLink;
+            return (
+              <LinkButton url={refUrl} key={index}>
+                {pathElement}
+              </LinkButton>
+            );
+          })}
+        </Dropdown>
+      )}
     </nav>
   );
 }

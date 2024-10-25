@@ -34,7 +34,7 @@
 }
 .brand::before {
   content: '';
-  background: url(assets/logo.svg) no-repeat 0 center;
+  background: url('assets/logo.svg') no-repeat 0 center;
   background-size: 26px;
   height: 26px;
   width: 26px;
@@ -113,20 +113,19 @@ main {
   display: flex;
   flex-wrap: nowrap;
   align-items: baseline;
+  overflow: auto;
 }
 .path::-webkit-scrollbar {
   display: none;
 }
 .home {
-  background: url(assets/home.svg);
+  background: url('assets/home.svg');
   background-position: left center;
   background-repeat: no-repeat;
-  /* background-size: 12px; */
-  /* padding-left: 22px; */
   width: 22px;
   height: 100%;
 }
-.path a, .path .dropdown {
+.path a {
   color: #f0f8ff;
   font-family: 'Courier New', Courier, monospace;
   font-size: 18px;
@@ -134,17 +133,55 @@ main {
   white-space: nowrap;
   text-decoration-thickness: 1px;
 }
-.path .dropdown {
-  font-size: 20px;
-}
-.path a:not(:first-child)::before {
-  content: '/';
-}
 /* hide all but the last path link on small screens */
 @media (max-width: 360px) {
   .path a:not(:last-child) {
     display: none;
   }
+}
+
+/* top branch selector */
+.branch-selector > div {
+  background: #24202b;
+}
+
+/* top gear dropdown menu */
+.branch-selector {
+  margin-left: auto;
+}
+
+.branch-selector > button.dropdown-button {
+  background: none;
+  padding: 7px; /* (32 - 18) / 2 */
+  width: 32px;
+  height: 32px;
+  opacity: 0.85;
+  overflow: hidden;
+}
+.branch-selector > button.dropdown-button::before {
+  background: url('assets/branch.svg') no-repeat center;
+  background-size: 18px;
+  position: static;
+  content: "";
+  width: 18px;
+  height: 18px;
+  transform: rotate(0deg);
+}
+.branch-selector > button.dropdown-button:active,
+.branch-selector > button.dropdown-button:hover {
+  opacity: 1;
+}
+.branch-selector.open > button.dropdown-button {
+  transform: rotate(10deg);
+}
+.branch-selector .dropdown-content {
+  right: 0;
+  left: auto;
+  max-width: 300px;
+}
+.branch-selector .dropdown-content button {
+  display: block;
+  font-size: 14px;
 }
 
 /* progress bar */
