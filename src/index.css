@@ -129,6 +129,8 @@ main {
   color: #f0f8ff;
   font-family: 'Courier New', Courier, monospace;
   font-size: 18px;
+  transform: translateY(1px);
+  /* ^ the monospace font slightly translates to the top, moving it by 1px better aligns with the icons */
   text-overflow: ellipsis;
   white-space: nowrap;
   text-decoration-thickness: 1px;
