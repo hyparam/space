@@ -78,7 +78,7 @@ export function parseUrl(url: string): ParsedUrl {
     const branch = folderCheck.groups.branch.replace(/\//g, "%2F");
     return {
       kind: "folder",
-      raw: url,
+      raw: `${urlObject.origin}/datasets/${folderCheck.groups.namespace}/${folderCheck.groups.repo}/${folderCheck.groups.action}/${branch}${folderCheck.groups.path}`,
       ...folderCheck.groups,
       branch,
     } as FolderUrl;
@@ -92,7 +92,7 @@ export function parseUrl(url: string): ParsedUrl {
     const branch = fileCheck.groups.branch.replace(/\//g, "%2F");
     return {
       kind: "file",
-      raw: url,
+      raw: `${urlObject.origin}/datasets/${fileCheck.groups.namespace}/${fileCheck.groups.repo}/${fileCheck.groups.action}/${branch}${fileCheck.groups.path}`,
       ...fileCheck.groups,
       branch,
       resolveUrl: `${urlObject.origin}/datasets/${fileCheck.groups.namespace}/${fileCheck.groups.repo}/resolve/${branch}${fileCheck.groups.path}`,

@@ -52,7 +52,6 @@ export default function Breadcrumb({ url }: BreadcrumbProps) {
     },
     [url]
   );
-
   return (
     <nav className="top-header">
       <a href="/" className="home"></a>
