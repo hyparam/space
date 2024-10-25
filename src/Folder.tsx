@@ -4,6 +4,7 @@ import { listFiles, ListFileEntry } from "@huggingface/hub";
 import Layout, { Spinner } from "./Layout.tsx";
 import { cn } from "./utils.ts";
 import { baseUrl, FolderUrl } from "./huggingface.ts";
+import Breadcrumb from "./Breadcrumb.tsx";
 import Link from "./Link.tsx";
 import { AuthContext } from "./contexts/AuthContext.tsx";
 
@@ -63,7 +64,9 @@ export default function Folder({ url }: FolderProps) {
   }, []);
 
   return (
-    <Layout error={error} title={url.path} url={url}>
+    <Layout error={error} title={url.path}>
+      <Breadcrumb url={url} />
+
       {files && files.length > 0 && (
         <ul className="file-list" ref={listRef}>
           {files.map((file, index) => (

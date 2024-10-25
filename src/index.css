@@ -90,10 +90,8 @@ main {
 /* top navbar */
 .top-header {
   align-items: center;
-  background: rgb(4,0,76);
-  background: linear-gradient(to right, rgba(4,0,76,1), rgba(68,51,170,1));
-  color: #f0f8ff;
-  /* color: #dde4ea; */
+  background: linear-gradient(to right, #353540, #24202b);
+  color: #dde4ea;
   display: flex;
   height: 32px;
   min-height: 32px;
@@ -103,9 +101,9 @@ main {
   font-size: 18px;
   margin: 0;
 }
-/* .top-header a {
+.top-header a {
   color: #e0e8ee;
-} */
+}
 
 /* file path */
 .path {
@@ -120,24 +118,13 @@ main {
   display: none;
 }
 .home {
-  background: url(assets/logo.svg);
+  background: url(assets/home.svg);
   background-position: left center;
   background-repeat: no-repeat;
-  background-size: 26px;
-  padding-left: 26px;
+  /* background-size: 12px; */
+  /* padding-left: 22px; */
   width: 22px;
   height: 100%;
-
-/* 
-  .brand::before {
-    content: '';
-    background: url(assets/logo.svg) no-repeat 0 center;
-    background-size: 26px;
-    height: 26px;
-    width: 26px;
-    margin-bottom: 10px;
-  } */
-
 }
 .path a, .path .dropdown {
   color: #f0f8ff;
@@ -208,8 +195,8 @@ main {
   padding: 10px;
 }
 
-/* dataset list */
-.dataset-list {
+/* ref list */
+.ref-list {
   flex: 1;
   list-style: none;
   overflow-y: auto;
@@ -217,26 +204,34 @@ main {
   padding-bottom: 24px;
   margin: 8px 0;
 }
-.dataset-list li {
+.ref-list li {
   margin: 0;
 }
-.dataset-list li:first-child a {
+.ref-list li:first-child a {
   border-top: 1px solid #bbb;
 }
-.dataset-list a {
+.ref-list a {
   border-bottom: 1px solid #bbb;
   color: #444;
   display: flex;
   padding: 8px 12px;
   text-decoration: none;
 }
-.dataset-list a:hover {
+.ref-list a:hover {
   background-color: #e2e2ee;
 }
-.dataset-list a > span {
+
+.ref-list a > span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.ref-tags {
+  background-color: #fffbeb;
+}
+.ref-converts {
+  background-color: #fee2e2;
 }
 
 /* file list */
