@@ -1,5 +1,5 @@
 import HighTable, { DataFrame, rowCache } from "hightable";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { parquetDataFrame } from "../tableProvider.ts";
 import { Spinner } from "../Layout.tsx";
 import ContentHeader from "./ContentHeader.tsx";
@@ -78,14 +78,23 @@ export default function ParquetView({
     }
   }, [loading, resolveUrl, setError, setProgress, auth]);
 
-  const onDoubleClickCell: (col: number, row: number) => void = (
-    col: number,
-    row: number
-  ) => {
+  const onDoubleClickCell = useCallback((col: number, row: number) => {
     changeQueryString(
       `?url=${url}&row=${row.toString()}&col=${col.toString()}`
     );
-  };
+  }, [url]);
+
+  const onMouseDownCell = useCallback((event: React.MouseEvent, col: number, row: number) => {
+    if (event.button === 1) {
+      // Middle click open in new tab
+      event.preventDefault()
+      const newUrl = new URL(window.location.href)
+      newUrl.search = `?url=${url}&row=${row.toString()}&col=${col.toString()}`
+      window.open(newUrl, '_blank')
+      /// ^ note that on HF spaces, this will use the inner space URL (https://xxx-yyy.static.hf.space)
+      /// and not the public space URL (https://huggingface.co/spaces/xxx/yyy). It's public too, so it's fine, I guess.
+    }
+  }, [url])
 
   const headersSpan = (
     <>
@@ -102,6 +111,7 @@ export default function ParquetView({
           cacheKey={resolveUrl}
           data={content.dataframe}
           onDoubleClickCell={onDoubleClickCell}
+          onMouseDownCell={onMouseDownCell}
           onError={setError}
         />
       )}
