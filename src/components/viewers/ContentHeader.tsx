@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { getFileSize } from '../files.js'
+import { getFileSize } from '../../lib/files.js'
 
 interface ContentHeaderProps {
   content?: { fileSize?: number }

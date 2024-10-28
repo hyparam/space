@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import Layout from './Layout.tsx'
-import Viewer from './Viewer.tsx'
-import { NonHfUrl, FileUrl } from './huggingface.ts'
+import Layout from "./Layout.tsx"
+import Viewer from "./Viewer.tsx"
+import { NonHfUrl, FileUrl } from '../lib/huggingface.ts'
 import Breadcrumb from './Breadcrumb.tsx'
 
 interface FileProps {

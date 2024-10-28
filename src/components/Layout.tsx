@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from "react";
-import { cn } from "./utils.ts";
-import { login } from "./login.ts";
-import HFLoginIcon from "./assets/sign-in-with-huggingface-sm.svg";
+import { cn } from "../lib/utils.ts";
+import { login } from "../lib/login.ts";
+import HFLoginIcon from "../assets/sign-in-with-huggingface-sm.svg";
 
 interface LayoutProps {
   children: ReactNode;

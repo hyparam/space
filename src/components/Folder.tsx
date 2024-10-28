@@ -1,12 +1,12 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { formatFileSize } from "./files.ts";
+import { formatFileSize } from "../lib/files.ts";
 import { listFiles, ListFileEntry } from "@huggingface/hub";
 import Layout, { Spinner } from "./Layout.tsx";
-import { cn } from "./utils.ts";
-import { baseUrl, FolderUrl } from "./huggingface.ts";
+import { cn } from "../lib/utils.ts";
+import { baseUrl, FolderUrl } from "../lib/huggingface.ts";
 import Breadcrumb from "./Breadcrumb.tsx";
 import Link from "./Link.tsx";
-import { AuthContext } from "./contexts/authContext.ts";
+import { AuthContext } from "../contexts/authContext.ts";
 
 interface FolderProps {
   url: FolderUrl;

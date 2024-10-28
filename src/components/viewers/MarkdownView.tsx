@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Spinner } from '../Layout.tsx'
 import Markdown from '../Markdown.tsx'
 import ContentHeader from './ContentHeader.tsx'
-import { AuthContext } from '../contexts/authContext.ts'
+import { AuthContext } from '../../contexts/authContext.ts'
 
 
 enum LoadingState {

@@ -1,10 +1,10 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { ParsedUrl, baseUrl, getUrlParts } from "./huggingface.ts";
+import { ParsedUrl, baseUrl, getUrlParts } from "../lib/huggingface.ts";
 import Link from "./Link.tsx";
 import LinkButton from "./LinkButton.tsx";
 import Dropdown from "./Dropdown.tsx";
-import { listRefs, RefMetadata } from "./files.ts";
-import { AuthContext } from "./contexts/authContext.ts";
+import { listRefs, RefMetadata } from "../lib/files.ts";
+import { AuthContext } from "../contexts/authContext.ts";
 
 interface BreadcrumbProps {
   url: ParsedUrl;

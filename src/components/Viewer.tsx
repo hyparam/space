@@ -1,4 +1,4 @@
-import { imageTypes } from "./files.ts";
+import { imageTypes } from "../lib/files.ts";
 import ImageView from "./viewers/ImageView.tsx";
 import MarkdownView from "./viewers/MarkdownView.tsx";
 import TableView from "./viewers/ParquetView.tsx";

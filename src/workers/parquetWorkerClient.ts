@@ -6,7 +6,7 @@ import type {
   Row,
 } from "./types.ts";
 import { AsyncBuffer, ColumnData } from "hyparquet";
-import { asyncBufferFromUrl } from "../utils.ts";
+import { asyncBufferFromUrl } from "../lib/utils.ts";
 
 let worker: Worker | undefined;
 let nextQueryId = 0;

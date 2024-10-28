@@ -1,10 +1,9 @@
 import Cell from "./Cell.tsx";
 import File from "./File.tsx";
 import Folder from "./Folder.tsx";
-import "./App.css";
-import { parseUrl } from "./huggingface.ts";
+import "../styles/App.css";
+import { parseUrl } from "../lib/huggingface.ts";
 import Layout from "./Layout.tsx";
-// import Repository from "./Repository.tsx";
 import Home from "./Home.tsx";
 
 export default function Page() {
@@ -32,7 +31,6 @@ export default function Page() {
     }
     if (parsedUrl.kind === "repo") {
       // repository view
-      // return <Repository url={parsedUrl} />;
       // for now: assume the "main" branch exists, and show it
       return (
         <Folder

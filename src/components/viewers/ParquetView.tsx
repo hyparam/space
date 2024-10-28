@@ -1,12 +1,12 @@
 import HighTable, { DataFrame, rowCache } from "hightable";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { parquetDataFrame } from "../tableProvider.ts";
+import { parquetDataFrame } from "../../lib/tableProvider.ts";
 import { Spinner } from "../Layout.tsx";
 import ContentHeader from "./ContentHeader.tsx";
 import { parquetMetadataAsync } from "hyparquet";
-import { changeQueryString } from "../huggingface.ts";
-import { asyncBufferFromUrl } from "../utils.ts";
-import { AuthContext } from "../contexts/authContext.ts";
+import { changeQueryString } from "../../lib/huggingface.ts";
+import { asyncBufferFromUrl } from "../../lib/utils.ts";
+import { AuthContext } from "../../contexts/authContext.ts";
 
 enum LoadingState {
   NotLoaded,

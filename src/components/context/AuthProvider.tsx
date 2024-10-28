@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { fetchOAuth } from "../login.ts";
+import { fetchOAuth } from "../../lib/login.ts";
 import {
   AuthContext,
   AuthContextValue,
   createEmptyAuth,
   createAuthFromOAuthResult,
-} from "./authContext.ts";
+} from "../../contexts/authContext.ts";
 
 interface AuthProviderProps {
   children?: React.ReactNode;
 }
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export default function AuthProvider({ children }: AuthProviderProps) {
   const [auth, setAuth] = useState<AuthContextValue | undefined>(undefined);
 
   useEffect(() => {

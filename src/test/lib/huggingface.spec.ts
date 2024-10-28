@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { parseUrl } from "./huggingface";
+import { parseUrl } from "../../lib/huggingface";
 
 test.for([[""], ["abc"]])("non-url string '%s' throws an error", ([url]) => {
   expect(() => parseUrl(url)).to.throw();
