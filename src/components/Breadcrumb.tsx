@@ -54,7 +54,7 @@ export default function Breadcrumb({ url }: BreadcrumbProps) {
   );
   return (
     <nav className="top-header">
-      <a href="/" className="home"></a>
+      <Link className="home"></Link>
       <div className="path">
         {getUrlParts(url).map(({ url: href, text }, i) => {
           return (
