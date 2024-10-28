@@ -1,8 +1,8 @@
 import { useContext, useRef } from "react";
 import { changeQueryString } from "./huggingface.ts";
 import Search from "./Search.tsx";
-import { login, logout } from "./Login.tsx";
-import { AuthContext } from "./contexts/AuthContext.tsx";
+import { login, logout } from "./login.ts";
+import { AuthContext } from "./contexts/authContext.ts";
 import HFLoginIcon from './assets/sign-in-with-huggingface-lg.svg';
 
 /**

@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { cn } from "./utils.ts";
-import { login } from "./Login.tsx";
+import { login } from "./login.ts";
 import HFLoginIcon from "./assets/sign-in-with-huggingface-sm.svg";
 
 interface LayoutProps {

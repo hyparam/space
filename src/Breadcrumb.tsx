@@ -4,7 +4,7 @@ import Link from "./Link.tsx";
 import LinkButton from "./LinkButton.tsx";
 import Dropdown from "./Dropdown.tsx";
 import { listRefs, RefMetadata } from "./files.ts";
-import { AuthContext } from "./contexts/AuthContext.tsx";
+import { AuthContext } from "./contexts/authContext.ts";
 
 interface BreadcrumbProps {
   url: ParsedUrl;

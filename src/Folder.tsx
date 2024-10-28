@@ -6,7 +6,7 @@ import { cn } from "./utils.ts";
 import { baseUrl, FolderUrl } from "./huggingface.ts";
 import Breadcrumb from "./Breadcrumb.tsx";
 import Link from "./Link.tsx";
-import { AuthContext } from "./contexts/AuthContext.tsx";
+import { AuthContext } from "./contexts/authContext.ts";
 
 interface FolderProps {
   url: FolderUrl;

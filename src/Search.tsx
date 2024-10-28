@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { listDatasets, DatasetEntry } from "@huggingface/hub";
 import { baseUrl } from "./huggingface.ts";
 import Link from "./Link.tsx";
-import { AuthContext } from "./contexts/AuthContext.tsx";
+import { AuthContext } from "./contexts/authContext.ts";
 
 export default function Search() {
   const [query, setQuery] = useState<string>();

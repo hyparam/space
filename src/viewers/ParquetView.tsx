@@ -6,7 +6,7 @@ import ContentHeader from "./ContentHeader.tsx";
 import { parquetMetadataAsync } from "hyparquet";
 import { changeQueryString } from "../huggingface.ts";
 import { asyncBufferFromUrl } from "../utils.ts";
-import { AuthContext } from "../contexts/AuthContext.tsx";
+import { AuthContext } from "../contexts/authContext.ts";
 
 enum LoadingState {
   NotLoaded,

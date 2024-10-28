@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Spinner } from '../Layout.tsx'
 import ContentHeader from './ContentHeader.tsx'
 import { contentTypes, parseFileSize } from '../files.ts'
-import { AuthContext } from '../contexts/AuthContext.tsx'
+import { AuthContext } from '../contexts/authContext.ts'
 
 enum LoadingState {
   NotLoaded,

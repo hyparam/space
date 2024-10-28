@@ -5,7 +5,7 @@ import { parquetMetadataAsync } from "hyparquet";
 import { NonHfUrl, FileUrl } from "./huggingface.ts";
 import Breadcrumb from "./Breadcrumb.tsx";
 import { asyncBufferFromUrl } from "./utils.ts";
-import { AuthContext } from "./contexts/AuthContext.tsx";
+import { AuthContext } from "./contexts/authContext.ts";
 import { asyncRows } from 'hightable'
 
 interface CellProps {
