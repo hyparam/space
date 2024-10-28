@@ -3,6 +3,7 @@ import { Spinner } from '../Layout.tsx'
 import Markdown from '../Markdown.tsx'
 import ContentHeader from './ContentHeader.tsx'
 import { AuthContext } from '../../contexts/authContext.ts'
+import { parseFileSize } from '../../lib/files.ts'
 
 
 enum LoadingState {
@@ -16,12 +17,17 @@ interface ViewerProps {
   setError: (error: Error | undefined) => void  
 }
 
+interface Content {
+  text: string
+  fileSize?: number
+}
+
 /**
  * Markdown viewer component.
  */
 export default function MarkdownView({ url, setError }: ViewerProps) {
   const [loading, setLoading] = useState(LoadingState.NotLoaded)
-  const [text, setText] = useState<string | undefined>()
+  const [content, setContent] = useState<Content>()
   const auth = useContext(AuthContext)
 
 
@@ -35,16 +41,17 @@ export default function MarkdownView({ url, setError }: ViewerProps) {
       try {
         const res = await fetch(url)
         const text = await res.text()
+        const fileSize = parseFileSize(res.headers) ?? text.length
         if (res.status == 401) {
           setError(new Error(text))
-          setText(undefined)
+          setContent(undefined)
           return
         }
         setError(undefined)
-        setText(text)
+        setContent({ text, fileSize })
       } catch (error) {
         setError(error as Error)
-        setText(undefined)
+        setContent(undefined)
       } finally {
         setLoading(LoadingState.Loaded)
       }
@@ -58,8 +65,8 @@ export default function MarkdownView({ url, setError }: ViewerProps) {
     })
   }, [url, setError, auth])
 
-  return <ContentHeader content={{ fileSize: text?.length }}>
-    <Markdown className='markdown' text={text ?? ''} />
+  return <ContentHeader content={content}>
+    <Markdown className='markdown' text={content?.text ?? ''} />
 
     { loading === LoadingState.Loading && <Spinner className='center' /> }
   </ContentHeader>

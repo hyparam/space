@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import { Spinner } from '../Layout.tsx'
 import ContentHeader from './ContentHeader.tsx'
 import { AuthContext } from '../../contexts/authContext.ts'
+import { parseFileSize } from '../../lib/files.ts'
 
 enum LoadingState {
   NotLoaded,
@@ -15,12 +16,17 @@ interface ViewerProps {
   setProgress: (progress: number | undefined) => void
 }
 
+interface Content {
+  text: string
+  fileSize?: number
+}
+
 /**
  * Text viewer component.
  */
 export default function TextView({ url, setError }: ViewerProps) {
   const [loading, setLoading] = useState(LoadingState.NotLoaded)
-  const [text, setText] = useState<string>()
+  const [content, setContent] = useState<Content>()
   const textRef = useRef<HTMLPreElement>(null)
   const auth = useContext(AuthContext)
 
@@ -35,16 +41,17 @@ export default function TextView({ url, setError }: ViewerProps) {
       try {
         const res = await fetch(url)
         const text = await res.text()
+        const fileSize = parseFileSize(res.headers) ?? text.length
         if (res.status == 401) {
           setError(new Error(text))
-          setText(undefined)
+          setContent(undefined)
           return
         }
         setError(undefined)
-        setText(text)        
+        setContent({ text, fileSize })
       } catch (error) {
         setError(error as Error)
-        setText(undefined)
+        setContent(undefined)
       } finally {
         setLoading(LoadingState.Loaded)
       }
@@ -59,13 +66,13 @@ export default function TextView({ url, setError }: ViewerProps) {
   }, [url, setError, auth])
 
   const headers = <>
-    <span>{text ? newlines(text) : 0} lines</span>
+    <span>{newlines(content?.text ?? "")} lines</span>
   </>
 
   // Simple text viewer
-  return <ContentHeader content={{ fileSize: text?.length }} headers={headers}>
+  return <ContentHeader content={content} headers={headers}>
     <code className='text' ref={textRef}>
-      {text}
+      {content?.text}
     </code>
 
     {loading && <Spinner className='center' />}
