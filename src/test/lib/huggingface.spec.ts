@@ -39,6 +39,7 @@ test.for([
 test.for([
   [
     "https://huggingface.co/datasets/namespace/repo/tree/branch",
+    "https://huggingface.co/datasets/namespace/repo/tree/branch",
     "namespace",
     "repo",
     "branch",
@@ -46,12 +47,14 @@ test.for([
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/tree/branch/",
+    "https://huggingface.co/datasets/namespace/repo/tree/branch",
     "namespace",
     "repo",
     "branch",
     "",
   ],
   [
+    "https://huggingface.co/datasets/namespace/repo/tree/refs%2Fconvert%2Fparquet",
     "https://huggingface.co/datasets/namespace/repo/tree/refs%2Fconvert%2Fparquet",
     "namespace",
     "repo",
@@ -61,6 +64,7 @@ test.for([
   [
     "https://huggingface.co/datasets/namespace/repo/tree/refs/convert/parquet",
     // also accepted because of URLSearchParams (see note in https://url.spec.whatwg.org/#dom-urlsearchparams-urlsearchparams)
+    "https://huggingface.co/datasets/namespace/repo/tree/refs%2Fconvert%2Fparquet",
     "namespace",
     "repo",
     "refs%2Fconvert%2Fparquet",
@@ -68,12 +72,14 @@ test.for([
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/tree/refs/pr/9",
+    "https://huggingface.co/datasets/namespace/repo/tree/refs%2Fpr%2F9",
     "namespace",
     "repo",
     "refs%2Fpr%2F9",
     "",
   ],
   [
+    "https://huggingface.co/datasets/namespace/repo/tree/branch/folder",
     "https://huggingface.co/datasets/namespace/repo/tree/branch/folder",
     "namespace",
     "repo",
@@ -82,12 +88,14 @@ test.for([
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/tree/branch/a/b/c/",
+    "https://huggingface.co/datasets/namespace/repo/tree/branch/a/b/c",
     "namespace",
     "repo",
     "branch",
     "/a/b/c",
   ],
   [
+    "https://huggingface.co/datasets/namespace/repo/tree/branch/folder.parquet",
     "https://huggingface.co/datasets/namespace/repo/tree/branch/folder.parquet",
     "namespace",
     "repo",
@@ -96,12 +104,12 @@ test.for([
   ],
 ])(
   "tree repo URL with a branch and an optional path returns a FolderUrl: %s",
-  ([url, namespace, repo, branch, path]) => {
+  ([url, raw, namespace, repo, branch, path]) => {
     expect(parseUrl(url)).toEqual({
       kind: "folder",
       namespace,
       repo,
-      raw: url,
+      raw,
       action: "tree",
       branch,
       path,
@@ -112,6 +120,7 @@ test.for([
 test.for([
   [
     "https://huggingface.co/datasets/namespace/repo/blob/branch/file",
+    "https://huggingface.co/datasets/namespace/repo/blob/branch/file",
     "namespace",
     "repo",
     "branch",
@@ -119,6 +128,7 @@ test.for([
     "https://huggingface.co/datasets/namespace/repo/resolve/branch/file",
   ],
   [
+    "https://huggingface.co/datasets/namespace/repo/blob/branch/path/to/file",
     "https://huggingface.co/datasets/namespace/repo/blob/branch/path/to/file",
     "namespace",
     "repo",
@@ -128,6 +138,7 @@ test.for([
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/blob/refs%2Fconvert%2Fparquet/file",
+    "https://huggingface.co/datasets/namespace/repo/blob/refs%2Fconvert%2Fparquet/file",
     "namespace",
     "repo",
     "refs%2Fconvert%2Fparquet",
@@ -136,6 +147,7 @@ test.for([
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/blob/refs/convert/parquet/file",
+    "https://huggingface.co/datasets/namespace/repo/blob/refs%2Fconvert%2Fparquet/file",
     "namespace",
     "repo",
     "refs%2Fconvert%2Fparquet",
@@ -143,6 +155,7 @@ test.for([
     "https://huggingface.co/datasets/namespace/repo/resolve/refs%2Fconvert%2Fparquet/file",
   ],
   [
+    "https://huggingface.co/datasets/namespace/repo/blob/branch/file.parquet",
     "https://huggingface.co/datasets/namespace/repo/blob/branch/file.parquet",
     "namespace",
     "repo",
@@ -152,12 +165,12 @@ test.for([
   ],
 ])(
   "blob repo URL with a branch and a path returns a FileUrl: %s",
-  ([url, namespace, repo, branch, path, resolveUrl]) => {
+  ([url, raw, namespace, repo, branch, path, resolveUrl]) => {
     expect(parseUrl(url)).toEqual({
       kind: "file",
       namespace,
       repo,
-      raw: url,
+      raw,
       action: "blob",
       branch,
       path,
@@ -169,6 +182,7 @@ test.for([
 test.for([
   [
     "https://huggingface.co/datasets/namespace/repo/resolve/branch/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/file",
     "namespace",
     "repo",
     "branch",
@@ -177,6 +191,7 @@ test.for([
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/resolve/branch/file?download=true",
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/file",
     "namespace",
     "repo",
     "branch",
@@ -184,6 +199,7 @@ test.for([
     "https://huggingface.co/datasets/namespace/repo/resolve/branch/file",
   ],
   [
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/path/to/file",
     "https://huggingface.co/datasets/namespace/repo/resolve/branch/path/to/file",
     "namespace",
     "repo",
@@ -193,6 +209,7 @@ test.for([
   ],
   [
     "https://huggingface.co/datasets/namespace/repo/resolve/refs%2Fconvert%2Fparquet/file",
+    "https://huggingface.co/datasets/namespace/repo/resolve/refs%2Fconvert%2Fparquet/file",
     "namespace",
     "repo",
     "refs%2Fconvert%2Fparquet",
@@ -200,6 +217,7 @@ test.for([
     "https://huggingface.co/datasets/namespace/repo/resolve/refs%2Fconvert%2Fparquet/file",
   ],
   [
+    "https://huggingface.co/datasets/namespace/repo/resolve/branch/file.parquet",
     "https://huggingface.co/datasets/namespace/repo/resolve/branch/file.parquet",
     "namespace",
     "repo",
@@ -209,12 +227,12 @@ test.for([
   ],
 ])(
   "resolve repo URL with a branch and a path returns a FileUrl: %s",
-  ([url, namespace, repo, branch, path, resolveUrl]) => {
+  ([url, raw, namespace, repo, branch, path, resolveUrl]) => {
     expect(parseUrl(url)).toEqual({
       kind: "file",
       namespace,
       repo,
-      raw: url,
+      raw,
       action: "resolve",
       branch,
       path,
