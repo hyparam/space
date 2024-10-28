@@ -4,6 +4,7 @@ import Search from "./Search.tsx";
 import { login, logout } from "../lib/login.ts";
 import { AuthContext } from "../contexts/authContext.ts";
 import HFLoginIcon from '../assets/sign-in-with-huggingface-lg.svg';
+import Link from "./Link.tsx";
 
 /**
  * Home page
@@ -95,36 +96,30 @@ export default function Home() {
           <p>Example files:</p>
           <ul className="quick-links">
             <li>
-              <a
+              <Link
                 className="aws"
-                href="?url=https://hyperparam-public.s3.amazonaws.com/wiki-en-00000-of-00041.parquet"
+                url="https://hyperparam-public.s3.amazonaws.com/wiki-en-00000-of-00041.parquet"
               >
                 s3://wiki-en-00000-of-00041.parquet
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 className="azure"
-                href="?url=https://hyperparam.blob.core.windows.net/hyperparam/starcoderdata-js-00000-of-00065.parquet"
+                url="https://hyperparam.blob.core.windows.net/hyperparam/starcoderdata-js-00000-of-00065.parquet"
               >
                 azure://starcoderdata-js-00000-of-00065.parquet
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                className="huggingface"
-                href="?url=https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet?download=true"
-              >
+              <Link className="huggingface" url="https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet">
                 huggingface://github-code-00000-of-01126.parquet
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                className="github"
-                href="?url=https://raw.githubusercontent.com/hyparam/hyparquet/master/test/files/rowgroups.parquet"
-              >
+              <Link className="github" url="https://raw.githubusercontent.com/hyparam/hyparquet/master/test/files/rowgroups.parquet">
                 github://rowgroups.parquet
-              </a>
+              </Link>
             </li>
           </ul>
         </p>
