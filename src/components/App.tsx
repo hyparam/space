@@ -1,10 +1,11 @@
 
-import { HttpFileSystem, HyperparamFileSystem, Page, Source } from '@hyparam/components'
+import { HttpFileSystem, Page, Source } from '@hyparam/components'
+import { HuggingFaceFileSystem } from '../lib/huggingface.js'
 import Home from './Home.js'
 
 const fileSystems = [
+  new HuggingFaceFileSystem(),
   new HttpFileSystem(),
-  new HyperparamFileSystem({ endpoint: location.origin }),
 ]
 
 export default function App() {

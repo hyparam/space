@@ -54,7 +54,7 @@ export default tseslint.config(
     extends: [js.configs.recommended, ...tseslint.configs.strictTypeChecked, ...tseslint.configs.stylisticTypeChecked],
     // Set the react version
     settings: { react: { version: '18.3' } },
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['{test,src}/**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2023,
       globals: globals.browser,
