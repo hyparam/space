@@ -8,6 +8,6 @@ const app = document.getElementById('app')
 if (!app) throw new Error('No app element')
 createRoot(app).render(
   <StrictMode>
-    <App apiBaseUrl={location.origin} />
+    <App />
   </StrictMode>,
 )
