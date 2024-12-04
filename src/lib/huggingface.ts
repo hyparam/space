@@ -1,5 +1,6 @@
-import { ListFileEntry, listFiles } from '@huggingface/hub'
-import { FileKind, FileMetadata, FileSystem, SourcePart, getFileName } from '@hyparam/components'
+import { listFiles } from '@huggingface/hub'
+import type { FileMetadata, FileSystem, SourcePart } from '@hyparam/components'
+import { getFileName } from '@hyparam/components'
 
 export const baseUrl = 'https://huggingface.co/datasets'
 
@@ -14,91 +15,108 @@ export function changeQueryString(queryString: string) {
   window.location.assign(url)
 }
 
-export class HuggingFaceFileSystem extends FileSystem {
-  fsId = 'huggingface' as const
-  canParse(source: string): boolean {
-    try {
-      parseHuggingFaceUrl(source)
-    } catch {
-      return false
-    }
-    return true
-  }
-  getKind(source: string): FileKind {
-    return parseHuggingFaceUrl(source).kind === 'file' ? 'file' : 'directory'
-    /// ^ repo is considered as a directory
-  }
-  getFileName(source: string): string {
-    return getFileName(source)
-  }
-  getPrefix(source: string): string {
-    const url = parseHuggingFaceUrl(source)
-    if (url.kind === 'file') {
-      throw new Error('Not a directory URL')
-    }
-    return `${url.origin}/datasets/${url.repo}/tree/${url.branch}${url.path}`.replace(/\/$/, '')
-  }
-  getResolveUrl(source: string): string {
-    const url = parseHuggingFaceUrl(source)
-    if (url.kind === 'file') {
-      return url.resolveUrl
-    }
-    throw new Error('Not a file URL')
-  }
-  getSourceParts(source: string): SourcePart[] {
-    const url = parseHuggingFaceUrl(source)
-    // if (url.kind === 'repo') {
-    //   const repoUrl = `${baseUrl}/${url.repo}`
-    //   return [{ source: repoUrl, name: repoUrl }]
-    // }
-    const sourceParts: SourcePart[] = [{
-      source: `${baseUrl}/${url.repo}/tree/${url.branch}/`,
-      name: `${baseUrl}/${url.repo}/${url.action}/${url.branch}/`,
-    }]
+function getSourceParts(url: HFUrl): SourcePart[] {
+  const sourceParts: SourcePart[] = [{
+    sourceId: `${baseUrl}/${url.repo}/tree/${url.branch}/`,
+    text: `${baseUrl}/${url.repo}/${url.action}/${url.branch}/`,
+  }]
 
-    const pathParts = url.path.split('/').filter(d => d.length > 0)
-    const lastPart = pathParts.at(-1)
-    if (lastPart) {
-      for (let i = 0; i < pathParts.length - 1; i++) {
-        sourceParts.push({
-          source: `${baseUrl}/${url.repo}/tree/${url.branch}/${pathParts.slice(0, i + 1).join('/')}`,
-          name: pathParts[i] + '/',
-        })
-      }
+  const pathParts = url.path.split('/').filter(d => d.length > 0)
+  const lastPart = pathParts.at(-1)
+  if (lastPart) {
+    for (let i = 0; i < pathParts.length - 1; i++) {
       sourceParts.push({
-        source: `${baseUrl}/${url.repo}/${url.action}/${url.branch}${url.path}`,
-        name: lastPart,
+        sourceId: `${baseUrl}/${url.repo}/tree/${url.branch}/${pathParts.slice(0, i + 1).join('/')}`,
+        text: pathParts[i] + '/',
       })
     }
-    return sourceParts
-  }
-  async _fetchFilesList(url: DirectoryUrl): Promise<ListFileEntry[]> {
-    const filesIterator = listFiles({
-      repo: `datasets/${url.repo}`,
-      revision: url.branch,
-      path: 'path' in url ? url.path.replace(/^\//, '') : '', // remove leading slash if any
-      expand: true,
+    sourceParts.push({
+      sourceId: `${baseUrl}/${url.repo}/${url.action}/${url.branch}${url.path}`,
+      text: lastPart,
     })
-    const files: ListFileEntry[] = []
-    for await (const file of filesIterator) {
-      files.push(file)
-    }
-    return files
   }
-  async listFiles(prefix: string): Promise<FileMetadata[]> {
-    const url = parseHuggingFaceUrl(prefix)
-    if (url.kind === 'file') {
-      throw new Error('Not a directory URL')
-    }
-    const files = await this._fetchFilesList(url)
-    return files.map(file => ({
+  return sourceParts
+}
+function getPrefix(url: DirectoryUrl): string {
+  return `${url.origin}/datasets/${url.repo}/tree/${url.branch}${url.path}`.replace(/\/$/, '')
+}
+async function fetchFilesList(url: DirectoryUrl): Promise<FileMetadata[]> {
+  const filesIterator = listFiles({
+    repo: `datasets/${url.repo}`,
+    revision: url.branch,
+    path: 'path' in url ? url.path.replace(/^\//, '') : '', // remove leading slash if any
+    expand: true,
+  })
+  const files: FileMetadata[] = []
+  for await (const file of filesIterator) {
+    files.push({
       name: getFileName(file.path),
       eTag: file.lastCommit?.id,
       size: file.size,
       lastModified: file.lastCommit?.date,
-      source: `${url.origin}/datasets/${url.repo}/${file.type === 'file' ? 'blob' : 'tree'}/${url.branch}/${file.path}`.replace(/\/$/, ''),
+      sourceId: `${url.origin}/datasets/${url.repo}/${file.type === 'file' ? 'blob' : 'tree'}/${url.branch}/${file.path}`.replace(/\/$/, ''),
       kind: file.type === 'file' ? 'file' : 'directory', // 'unknown' is considered as a directory
-    }))
+    })
+  }
+  return files
+}
+export function createHuggingFaceFileSystem(): FileSystem {
+  return {
+    fsId: 'huggingface' as const,
+    canParse: sourceId => {
+      try {
+        parseHuggingFaceUrl(sourceId)
+      } catch {
+        return false
+      }
+      return true
+    },
+    getKind: sourceId => parseHuggingFaceUrl(sourceId).kind,
+    getFileName,
+    getPrefix: sourceId => {
+      const url = parseHuggingFaceUrl(sourceId)
+      if (url.kind === 'file') {
+        throw new Error('Not a directory URL')
+      }
+      return getPrefix(url)
+    },
+    getResolveUrl: (sourceId: string): string => {
+      const url = parseHuggingFaceUrl(sourceId)
+      if (url.kind === 'file') {
+        return url.resolveUrl
+      }
+      throw new Error('Not a file URL')
+    },
+    getSourceParts: (sourceId: string): SourcePart[] => {
+      return getSourceParts(parseHuggingFaceUrl(sourceId))
+    },
+    listFiles: (prefix: string): Promise<FileMetadata[]> => {
+      const url = parseHuggingFaceUrl(prefix)
+      if (url.kind === 'file') {
+        throw new Error('Not a directory URL')
+      }
+      return fetchFilesList(url)
+    },
+    getSource: (sourceId: string) => {
+      const url = parseHuggingFaceUrl(sourceId)
+      if (url.kind === 'file') {
+        return {
+          kind: 'file',
+          sourceId,
+          sourceParts: getSourceParts(url),
+          fileName: getFileName(url.path),
+          resolveUrl: url.resolveUrl,
+        }
+      } else {
+        return {
+          kind: 'directory',
+          sourceId,
+          sourceParts: getSourceParts(url),
+          prefix: getPrefix(url),
+          listFiles: () => fetchFilesList(url),
+        }
+      }
+    },
   }
 }
 
