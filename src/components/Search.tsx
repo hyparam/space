@@ -1,9 +1,9 @@
 import { DatasetEntry, listDatasets } from '@huggingface/hub'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { baseUrl } from '../lib/huggingface.js'
+import { baseUrl } from '../lib/huggingfaceSource.js'
 import Link from './Link.js'
 
-export default function Search() {
+export default function Search({ accessToken } : { accessToken?: string }) {
   const [query, setQuery] = useState<string>()
   const [datasets, setDatasets] = useState<DatasetEntry[]>([])
 
@@ -13,7 +13,9 @@ export default function Search() {
       for await (const dataset of listDatasets({
         search: { query },
         limit: 10,
-        fetch,
+        /// TODO(SL): switch when https://github.com/huggingface/huggingface.js/issues/1063 is released
+        // accessToken,
+        credentials: accessToken ? { accessToken } : undefined,
       })) {
         newDatasets.push(dataset)
       }
@@ -23,7 +25,7 @@ export default function Search() {
       setDatasets([])
       console.error(error)
     })
-  }, [query])
+  }, [query, accessToken])
 
   function onChange(event: ChangeEvent<HTMLInputElement>) {
     setQuery(event.target.value)

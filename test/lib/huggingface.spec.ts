@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { parseHuggingFaceUrl } from '../../src/lib/huggingface'
+import { parseHuggingFaceUrl } from '../../src/lib/huggingfaceSource'
 
 const origin = 'https://huggingface.co'
 

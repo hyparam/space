@@ -1,12 +1,15 @@
+import { OAuthResult } from '@huggingface/hub'
 import { FormEvent, useRef } from 'react'
-import { changeQueryString } from '../lib/huggingface.js'
+import HFLoginIcon from '../assets/sign-in-with-huggingface-lg.svg'
+import { login, logout } from '../lib/auth.js'
+import { changeQueryString } from '../lib/huggingfaceSource.js'
 import Link from './Link.js'
 import Search from './Search.js'
 
 /**
  * Home page
  */
-export default function Home() {
+export default function Home({ auth }: { auth: OAuthResult | undefined }) {
   const audioRef = useRef<HTMLAudioElement>(null)
 
   function onUrlSubmit(event: FormEvent<HTMLFormElement>) {
@@ -56,8 +59,24 @@ export default function Home() {
 
       <section>
         <h3>Select a dataset on Hugging Face</h3>
-        <p>Search for  dataset:</p>
-        <Search></Search>
+        {
+          auth ?
+            <p>Logged in as
+              <img src={auth.userInfo.avatarUrl} alt={auth.userInfo.name} style={{ width: '1rem', height: '1rem', borderRadius: '50%', margin: '0 0.5rem' }} />
+              {auth.userInfo.name} (<a onClick={() => {logout()}}>Log out</a>). You can search your private and gated datasets.</p>
+            : <><p>Log in to search your private and gated datasets</p><p><a
+              onClick={() => {
+                login().catch(() => undefined)
+              }}
+            >
+              <img
+                src={HFLoginIcon}
+                alt="Sign in with Hugging Face"
+              />
+            </a></p></>
+        }
+        <p>Search for dataset:</p>
+        <Search accessToken={auth?.accessToken}></Search>
       </section>
       <section>
         <h3>Parquet URL</h3>
