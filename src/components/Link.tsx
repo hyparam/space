@@ -10,7 +10,6 @@ export default function Link({ url, children, className }: { url?: string; child
       href={`/${queryString}`}
       onClick={(e) => {
         e.preventDefault()
-        e.stopPropagation()
         changeQueryString(queryString)
       }}
     >
