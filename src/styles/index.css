@@ -50,6 +50,9 @@ a:hover {
   color: #000;
   text-decoration: underline;
 }
+button {
+  cursor: pointer;
+}
 
 /* layout */
 main {
@@ -361,6 +364,7 @@ main {
   display: flex;
   gap: 16px;
   height: 24px;
+  overflow: hidden;
   padding: 0 8px;
   /* all one line */
   text-overflow: ellipsis;
@@ -422,6 +426,74 @@ main {
   font-weight: 500;
   margin-bottom: 8px;
   margin-top: 16px;
+}
+
+.slideContainer {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.slideMain {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 100px;
+  overflow: auto;
+}
+
+.slidePanel {
+  display: flex;
+  flex-direction: column;
+  width: 0;
+  transition: width 0.2s;
+}
+
+.slideDragging {
+  transition: none;
+}
+
+.resizer {
+  width: 5px;
+  cursor: col-resize;
+  background-color: #bfbbbb;
+  transition: background-color 0.2s;
+  user-select: none;
+}
+
+.resizer:hover {
+  background-color: #9f9999;
+}
+
+/* slide panel close button */
+.slideClose,
+.slideClose:active,
+.slideClose:focus,
+.slideClose:hover {
+  background: none;
+  border: none;
+  color: inherit;
+  height: 24px;
+  margin-right: auto;
+  outline: none;
+}
+.slideClose::before {
+  content: "\27E9\27E9";
+}
+.slideClose:hover {
+  font-weight: bold;
+}
+
+/* viewers */
+.text {
+  background-color: #22222b;
+  color: #d6d6d6;
+  display: block;
+  flex: 1;
+  padding: 8px;
+  width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
 }
 
 

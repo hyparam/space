@@ -1,52 +1,46 @@
-import { useContext, useEffect, useState } from "react";
-import { listDatasets, DatasetEntry } from "@huggingface/hub";
-import { baseUrl } from "../lib/huggingface.ts";
-import Link from "./Link.tsx";
-import { AuthContext } from "../contexts/authContext.ts";
+import { DatasetEntry, listDatasets } from '@huggingface/hub'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { baseUrl } from '../lib/huggingfaceSource.js'
+import Link from './Link.js'
 
-export default function Search() {
-  const [query, setQuery] = useState<string>();
-  const [datasets, setDatasets] = useState<DatasetEntry[]>([]);
-  const auth = useContext(AuthContext);
+export default function Search({ accessToken } : { accessToken?: string }) {
+  const [query, setQuery] = useState<string>()
+  const [datasets, setDatasets] = useState<DatasetEntry[]>([])
 
   useEffect(() => {
-    if (!auth) {
-      // Auth not loaded yet
-      return;
-    }
-    const fetch = auth.fetch;
     async function fetchDatasets() {
-      const newDatasets: DatasetEntry[] = [];
+      const newDatasets: DatasetEntry[] = []
       for await (const dataset of listDatasets({
         search: { query },
-        // TODO(SL) ^ we can set the owner if logged in with {owner: auth.oAuthResult?.userInfo.name}
         limit: 10,
-        fetch
+        /// TODO(SL): switch when https://github.com/huggingface/huggingface.js/issues/1063 is released
+        // accessToken,
+        credentials: accessToken ? { accessToken } : undefined,
       })) {
-        newDatasets.push(dataset);
+        newDatasets.push(dataset)
       }
-      setDatasets(newDatasets);
+      setDatasets(newDatasets)
     }
     fetchDatasets().catch((error: unknown) => {
-      setDatasets([]);
-      console.error(error);
-    });
-  }, [query, auth]);
+      setDatasets([])
+      console.error(error)
+    })
+  }, [query, accessToken])
 
-  function onChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setQuery(event.target.value);
+  function onChange(event: ChangeEvent<HTMLInputElement>) {
+    setQuery(event.target.value)
   }
 
   return (
     <>
       <input type="search" onChange={onChange} />
       <ul className="ref-list">
-        {datasets.map((dataset) => (
-          <li key={dataset.name} style={{ fontSize: "0.9rem" }}>
+        {datasets.map((dataset) =>
+          <li key={dataset.name} style={{ fontSize: '0.9rem' }}>
             <Link url={`${baseUrl}/${dataset.name}`}>{dataset.name}</Link>
-          </li>
-        ))}
+          </li>,
+        )}
       </ul>
     </>
-  );
+  )
 }
