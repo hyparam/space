@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { changeQueryString } from '../lib/huggingfaceSource.js';
+import { ReactNode } from 'react'
+import { changeQueryString } from '../lib/huggingfaceSource.js'
 
 // workaround for Hugging Face spaces
 export default function Link({ url, children, className }: { url?: string; children?: ReactNode; className?: string }) {
