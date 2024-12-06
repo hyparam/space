@@ -61,66 +61,6 @@ async function fetchFilesList(url: DirectoryUrl, options?: {requestInit?: Reques
   }
   return files
 }
-// export function createHuggingFaceFileSystem(): FileSystem {
-//   return {
-//     fsId: 'huggingface' as const,
-//     canParse: sourceId => {
-//       try {
-//         parseHuggingFaceUrl(sourceId)
-//       } catch {
-//         return false
-//       }
-//       return true
-//     },
-//     getKind: sourceId => parseHuggingFaceUrl(sourceId).kind,
-//     getFileName,
-//     getPrefix: sourceId => {
-//       const url = parseHuggingFaceUrl(sourceId)
-//       if (url.kind === 'file') {
-//         throw new Error('Not a directory URL')
-//       }
-//       return getPrefix(url)
-//     },
-//     getResolveUrl: (sourceId: string): string => {
-//       const url = parseHuggingFaceUrl(sourceId)
-//       if (url.kind === 'file') {
-//         return url.resolveUrl
-//       }
-//       throw new Error('Not a file URL')
-//     },
-//     getSourceParts: (sourceId: string): SourcePart[] => {
-//       return getSourceParts(parseHuggingFaceUrl(sourceId))
-//     },
-//     listFiles: (prefix: string, options?: {requestInit?: RequestInit, accessToken?: string}): Promise<FileMetadata[]> => {
-//       const url = parseHuggingFaceUrl(prefix)
-//       if (url.kind === 'file') {
-//         throw new Error('Not a directory URL')
-//       }
-//       return fetchFilesList(url, options)
-//     },
-//     getSource: (sourceId: string, options?: {requestInit?: RequestInit, accessToken?: string}) => {
-//       const url = parseHuggingFaceUrl(sourceId)
-//       if (url.kind === 'file') {
-//         return {
-//           kind: 'file',
-//           sourceId,
-//           sourceParts: getSourceParts(url),
-//           fileName: getFileName(url.path),
-//           resolveUrl: url.resolveUrl,
-//           requestInit: options?.requestInit,
-//         }
-//       } else {
-//         return {
-//           kind: 'directory',
-//           sourceId,
-//           sourceParts: getSourceParts(url),
-//           prefix: getPrefix(url),
-//           listFiles: () => fetchFilesList(url, options),
-//         }
-//       }
-//     },
-//   }
-// }
 export function getHuggingFaceSource(sourceId: string, options?: {requestInit?: RequestInit, accessToken?: string}): FileSource | DirSource | undefined {
   try {
     const url = parseHuggingFaceUrl(sourceId)
