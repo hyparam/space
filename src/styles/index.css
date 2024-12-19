@@ -617,17 +617,9 @@ main {
 .huggingface {
   background: url('../assets/huggingface.svg') no-repeat 8px center;
 }
-.github {
-  background: url('../assets/git.svg') no-repeat 8px center;
-}
-.aws {
-  background: url('../assets/s3.svg') no-repeat 8px center;
-}
-.azure {
-  background: url('../assets/azure.svg') no-repeat 8px center;
-}
 
 h1 {
+  font-family: 'Century Gothic', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 22pt;
 }
 h2 {
