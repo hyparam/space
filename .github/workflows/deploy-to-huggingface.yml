@@ -2,7 +2,7 @@ name: Deploy to Hugging Face
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 env:
