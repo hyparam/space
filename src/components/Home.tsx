@@ -59,7 +59,7 @@ export default function Home({ auth }: { auth: OAuthResult | undefined }) {
         <form onSubmit={onUrlSubmit} style={{ display: 'flex', gap: '1rem' }}>
           <label htmlFor="url">URL</label>
           <input name="url" defaultValue="https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet" style={{ width: '100%' }} type="url" />
-          <button style={{ fontSize: '1rem', padding: '0 0.5rem' }} type="submit">Open</button>
+          <button type="submit">Open</button>
         </form>
       </section>
     </div>
