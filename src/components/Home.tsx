@@ -3,6 +3,7 @@ import { FormEvent } from 'react'
 import HFLoginIcon from '../assets/sign-in-with-huggingface-lg.svg'
 import { login, logout } from '../lib/auth.js'
 import { changeQueryString } from '../lib/huggingfaceSource.js'
+import styles from '../styles/Home.module.css'
 import Search from './Search.js'
 
 /**
@@ -20,7 +21,7 @@ export default function Home({ auth }: { auth: OAuthResult | undefined }) {
   }
 
   return (
-    <div id="welcome">
+    <div className={styles.home}>
       <h1>Hyperparam</h1>
       <h2>Advanced Dataset Viewer Space</h2>
       <p>
@@ -32,7 +33,7 @@ export default function Home({ auth }: { auth: OAuthResult | undefined }) {
         <h3>Select a dataset on Hugging Face</h3>
         {auth &&
           <p>Logged in as
-            <img src={avatarUrl} alt={auth.userInfo.name} className='avatar' />
+            <img src={avatarUrl} alt={auth.userInfo.name} className={styles.avatar} />
             {auth.userInfo.name} (<a onClick={logout}>Log out</a>).
             You can search your private and gated datasets.
           </p>
@@ -41,7 +42,7 @@ export default function Home({ auth }: { auth: OAuthResult | undefined }) {
           <p>Log in to search your private and gated datasets</p>
           <p>
             <a onClick={() => {
-              login().catch(() => undefined)
+              void login()
             }}>
               <img
                 src={HFLoginIcon}
@@ -56,9 +57,9 @@ export default function Home({ auth }: { auth: OAuthResult | undefined }) {
       <section>
         <h3>Parquet URL</h3>
         <p>You can also set a url to see your parquet data. 👀</p>
-        <form onSubmit={onUrlSubmit} style={{ display: 'flex', gap: '1rem' }}>
+        <form onSubmit={onUrlSubmit} className={styles.urlForm}>
           <label htmlFor="url">URL</label>
-          <input name="url" defaultValue="https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet" style={{ width: '100%' }} type="url" />
+          <input name="url" defaultValue="https://huggingface.co/datasets/codeparrot/github-code/resolve/main/data/train-00000-of-01126.parquet" type="url" />
           <button type="submit">Open</button>
         </form>
       </section>

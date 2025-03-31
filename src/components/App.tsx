@@ -1,7 +1,7 @@
 
 import { OAuthResult } from '@huggingface/hub'
-import { Page, getHttpSource } from '@hyparam/components'
-import { useEffect, useState } from 'react'
+import { Config, ConfigProvider, Page, getHttpSource } from 'hyperparam'
+import { useEffect, useMemo, useState } from 'react'
 import { fetchOAuth, getLocalOAuth } from '../lib/auth.js'
 import { getHuggingFaceSource } from '../lib/huggingfaceSource.js'
 import Home from './Home.js'
@@ -20,6 +20,16 @@ export default function App() {
   const [auth, setAuth] = useState<OAuthResult | undefined>(localOAuth)
   const [accessToken, setAccessToken] = useState<string | undefined>(localOAuth?.accessToken)
   const [requestInit, setRequestInit] = useState<RequestInit | undefined>(getRequestInit(localOAuth?.accessToken))
+
+  const config: Config = useMemo(() => ({
+    customClass: {
+      highTable: 'hightable',
+    },
+    routes: {
+      getSourceRouteUrl: ({ sourceId }) => `/?url=${sourceId}`,
+      getCellRouteUrl: ({ sourceId, col, row }) => `/?url=${sourceId}&col=${col}&row=${row}`,
+    },
+  }), [])
 
   useEffect(() => {
     if (auth) return
@@ -52,10 +62,8 @@ export default function App() {
     const defaultUrl = '/?url=https://huggingface.co/datasets/severo/test-parquet/resolve/main/parquet/csv-train-00000-of-00001.parquet'
     return <div>Could not load a data source. You have to pass a valid source in the url, eg: <a href={defaultUrl}>{defaultUrl}</a>.</div>
   }
-  return <Page source={source} navigation={{ row, col }} config={{
-    routes: {
-      getSourceRouteUrl: ({ sourceId }) => `/?url=${sourceId}`,
-      getCellRouteUrl: ({ sourceId, col, row }) => `/?url=${sourceId}&col=${col}&row=${row}`,
-    },
-  }} />
+
+  return <ConfigProvider value={config}>
+    <Page source={source} navigation={{ row, col }} />
+  </ConfigProvider>
 }
