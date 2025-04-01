@@ -1,10 +1,10 @@
 import { OAuthResult } from '@huggingface/hub'
 import { FormEvent } from 'react'
-import HFLoginIcon from '../assets/sign-in-with-huggingface-lg.svg'
-import { login, logout } from '../lib/auth.js'
-import { changeQueryString } from '../lib/huggingfaceSource.js'
-import styles from '../styles/Home.module.css'
-import Search from './Search.js'
+import HFLoginIcon from '../../assets/sign-in-with-huggingface-lg.svg'
+import { login, logout } from '../../lib/auth.js'
+import { changeQueryString } from '../../lib/huggingfaceSource.js'
+import Search from '../Search/Search.js'
+import styles from './Home.module.css'
 
 /**
  * Home page
