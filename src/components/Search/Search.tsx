@@ -1,8 +1,8 @@
 import { DatasetEntry, listDatasets } from '@huggingface/hub'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { baseUrl } from '../lib/huggingfaceSource.js'
-import styles from '../styles/Search.module.css'
-import Link from './Link.js'
+import { baseUrl } from '../../lib/huggingfaceSource.js'
+import Link from '../Link/Link.js'
+import styles from './Search.module.css'
 
 export default function Search({ accessToken } : { accessToken?: string }) {
   const [query, setQuery] = useState<string>()

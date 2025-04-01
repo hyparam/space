@@ -2,9 +2,9 @@
 import { OAuthResult } from '@huggingface/hub'
 import { Config, ConfigProvider, Page, getHttpSource } from 'hyperparam'
 import { useEffect, useMemo, useState } from 'react'
-import { fetchOAuth, getLocalOAuth } from '../lib/auth.js'
-import { getHuggingFaceSource } from '../lib/huggingfaceSource.js'
-import Home from './Home.js'
+import { fetchOAuth, getLocalOAuth } from '../../lib/auth.js'
+import { getHuggingFaceSource } from '../../lib/huggingfaceSource.js'
+import Home from '../Home/Home.js'
 
 function getRequestInit(accessToken: string | undefined): RequestInit | undefined {
   if (!accessToken) return undefined
