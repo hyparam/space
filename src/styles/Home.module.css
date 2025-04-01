@@ -53,12 +53,12 @@
     border-radius: 8px;
     color: #444;
     outline: none;
+  }
 
-    transition:border .3s &:focus {
-      border-color: #778;
-      box-shadow: 0 0 1px #556;
-      color: #444;
-    }
+  transition:border .3s input:focus {
+    border-color: #778;
+    box-shadow: 0 0 1px #556;
+    color: #444;
   }
 }
 
