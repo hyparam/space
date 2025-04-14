@@ -29,6 +29,21 @@ export default function App() {
       getSourceRouteUrl: ({ sourceId }) => `/?url=${sourceId}`,
       getCellRouteUrl: ({ sourceId, col, row }) => `/?url=${sourceId}&col=${col}&row=${row}`,
     },
+    welcome: {
+      content: <>
+        <h2>Hyperparam Space</h2>
+        <p>
+          This is the <a href="https://hyperparam.app">hyperparam.app</a> interactive dataset viewer, embedded in a Hugging Face Space.
+        </p>
+        <p>
+          Hyperparam aims to be the best tool for exploring huge unstructured text datasets in the browser.
+          You can rapidly scroll through datasets and double-click cells to see full text content.
+        </p>
+        <p>
+          Sign in with HF to access gated datasets.
+        </p>
+      </>,
+    },
   }), [])
 
   useEffect(() => {
