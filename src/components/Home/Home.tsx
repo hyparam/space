@@ -1,5 +1,5 @@
 import { OAuthResult } from '@huggingface/hub'
-import { FormEvent } from 'react'
+import { FormEvent, useEffect } from 'react'
 import HFLoginIcon from '../../assets/sign-in-with-huggingface-lg.svg'
 import { login, logout } from '../../lib/auth.js'
 import { changeQueryString } from '../../lib/huggingfaceSource.js'
@@ -20,13 +20,21 @@ export default function Home({ auth }: { auth: OAuthResult | undefined }) {
     changeQueryString(`?url=${url}`)
   }
 
+  // pre-dismiss the welcome popup since user landed on the home page
+  useEffect(() => {
+    localStorage.setItem('welcome:dismissed', 'true')
+  }, [])
+
   return (
     <div className={styles.home}>
-      <h1>Hyperparam</h1>
-      <h2>Advanced Dataset Viewer Space</h2>
+      <h1>Hyperparam Space</h1>
+      <h2>Hyperparam Space</h2>
       <p>
-        Hyperparam is a high performance dataset viewer for parquet files.
-        It leverages the power of parquet files and http ranged get requests to provide a fast and efficient way to view large datasets in the browser.
+        This is the <a href="https://hyperparam.app">hyperparam.app</a> interactive dataset viewer, embedded in a Hugging Face Space.
+      </p>
+      <p>
+        Hyperparam aims to be the best tool for exploring huge unstructured text datasets in the browser.
+        You can rapidly scroll through datasets and double-click cells to see full text content.
       </p>
 
       <section>
@@ -39,7 +47,7 @@ export default function Home({ auth }: { auth: OAuthResult | undefined }) {
           </p>
         }
         {!auth && <>
-          <p>Log in to search your private and gated datasets</p>
+          <p>Sign in with HF to access your private and gated datasets.</p>
           <p>
             <a onClick={() => {
               void login()
