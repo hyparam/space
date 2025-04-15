@@ -40,7 +40,7 @@ export default function App() {
           You can rapidly scroll through datasets and double-click cells to see full text content.
         </p>
         <p>
-          Sign in with HF to access gated datasets.
+          Sign in with HF to access private and gated datasets.
         </p>
       </>,
     },
