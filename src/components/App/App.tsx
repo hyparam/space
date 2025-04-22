@@ -3,7 +3,7 @@ import { OAuthResult } from '@huggingface/hub'
 import { Config, ConfigProvider, Page, getHttpSource } from 'hyperparam'
 import { useEffect, useMemo, useState } from 'react'
 import { fetchOAuth, getLocalOAuth } from '../../lib/auth.js'
-import { getHuggingFaceSource, syncParentQueryString } from '../../lib/huggingfaceSource.js'
+import { getHuggingFaceSource } from '../../lib/huggingfaceSource.js'
 import Home from '../Home/Home.js'
 
 function getRequestInit(accessToken: string | undefined): RequestInit | undefined {
@@ -78,10 +78,17 @@ export default function App() {
     return <div>Could not load a data source. You have to pass a valid source in the url, eg: <a href={defaultUrl}>{defaultUrl}</a>.</div>
   }
 
-  // Send a message to the parent window to synchronize the query string
-  // Note that the iframe has no access to the parent window's location, so
-  // it might already by in sync, we just don't know.
-  syncParentQueryString(window.location.search)
+  /* Send a message to the parent window to synchronize the query string
+   *
+   * Hugging Face Space impose some restrictions to the static apps that are hosted on their platform,
+   * with respect to the URLs. Only hash and query strings can be changed, and doing so requires
+   * some custom code:
+   *   https://huggingface.co/docs/hub/spaces-handle-url-parameters
+   *
+   * Note that the iframe has no access to the parent window's location, so
+   * it might already by in sync, we just don't know.
+   */
+  window.parent.postMessage({ queryString: window.location.search }, 'https://huggingface.co')
 
   return <ConfigProvider value={config}>
     <Page source={source} navigation={{ row, col }} />

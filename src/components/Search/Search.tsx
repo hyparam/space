@@ -1,7 +1,6 @@
 import { DatasetEntry, listDatasets } from '@huggingface/hub'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { baseUrl } from '../../lib/huggingfaceSource.js'
-import Link from '../Link/Link.js'
 import styles from './Search.module.css'
 
 export default function Search({ accessToken } : { accessToken?: string }) {
@@ -38,7 +37,7 @@ export default function Search({ accessToken } : { accessToken?: string }) {
       <ul className={styles.refList}>
         {datasets.map((dataset) =>
           <li key={dataset.name}>
-            <Link url={`${baseUrl}/${dataset.name}`}>{dataset.name}</Link>
+            <a href={`/?url=${baseUrl}/${dataset.name}`}>{dataset.name}</a>
           </li>,
         )}
       </ul>
