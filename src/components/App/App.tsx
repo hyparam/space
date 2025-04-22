@@ -78,6 +78,18 @@ export default function App() {
     return <div>Could not load a data source. You have to pass a valid source in the url, eg: <a href={defaultUrl}>{defaultUrl}</a>.</div>
   }
 
+  /* Send a message to the parent window to synchronize the query string
+   *
+   * Hugging Face Space impose some restrictions to the static apps that are hosted on their platform,
+   * with respect to the URLs. Only hash and query strings can be changed, and doing so requires
+   * some custom code:
+   *   https://huggingface.co/docs/hub/spaces-handle-url-parameters
+   *
+   * Note that the iframe has no access to the parent window's location, so
+   * it might already by in sync, we just don't know.
+   */
+  window.parent.postMessage({ queryString: window.location.search }, 'https://huggingface.co')
+
   return <ConfigProvider value={config}>
     <Page source={source} navigation={{ row, col }} />
   </ConfigProvider>

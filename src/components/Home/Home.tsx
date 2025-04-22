@@ -2,7 +2,6 @@ import { OAuthResult } from '@huggingface/hub'
 import { FormEvent, useEffect } from 'react'
 import HFLoginIcon from '../../assets/sign-in-with-huggingface-lg.svg'
 import { login, logout } from '../../lib/auth.js'
-import { changeQueryString } from '../../lib/huggingfaceSource.js'
 import Search from '../Search/Search.js'
 import styles from './Home.module.css'
 
@@ -17,7 +16,7 @@ export default function Home({ auth }: { auth: OAuthResult | undefined }) {
   function onUrlSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const url = new FormData(event.currentTarget).get('url') as string
-    changeQueryString(`?url=${url}`)
+    window.location.href = `/?url=${url}`
   }
 
   // pre-dismiss the welcome popup since user landed on the home page
