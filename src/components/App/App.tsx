@@ -3,7 +3,7 @@ import { OAuthResult } from '@huggingface/hub'
 import { Config, ConfigProvider, Page, getHttpSource } from 'hyperparam'
 import { useEffect, useMemo, useState } from 'react'
 import { fetchOAuth, getLocalOAuth } from '../../lib/auth.js'
-import { getHuggingFaceSource } from '../../lib/huggingfaceSource.js'
+import { getHuggingFaceSource, syncParentQueryString } from '../../lib/huggingfaceSource.js'
 import Home from '../Home/Home.js'
 
 function getRequestInit(accessToken: string | undefined): RequestInit | undefined {
@@ -77,6 +77,11 @@ export default function App() {
     const defaultUrl = '/?url=https://huggingface.co/datasets/severo/test-parquet/resolve/main/parquet/csv-train-00000-of-00001.parquet'
     return <div>Could not load a data source. You have to pass a valid source in the url, eg: <a href={defaultUrl}>{defaultUrl}</a>.</div>
   }
+
+  // Send a message to the parent window to synchronize the query string
+  // Note that the iframe has no access to the parent window's location, so
+  // it might already by in sync, we just don't know.
+  syncParentQueryString(window.location.search)
 
   return <ConfigProvider value={config}>
     <Page source={source} navigation={{ row, col }} />
