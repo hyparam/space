@@ -65,10 +65,10 @@ export function getHuggingFaceSource(sourceId: string, options?: {requestInit?: 
           // remove refs/heads/ from the ref name
           // e.g. refs/heads/main -> main
           const fixedRef = refType === 'branches' ? ref.replace(/refs\/heads\//, '') : ref
-          const sourceId = `${url.origin}/datasets/${url.repo}/${url.kind === 'file' ? 'blob' : 'tree'}/${fixedRef}${url.path}`
+          const branchSourceId = `${url.origin}/datasets/${url.repo}/${url.kind === 'file' ? 'blob' : 'tree'}/${fixedRef}${url.path}`
           return {
             label,
-            sourceId,
+            sourceId: branchSourceId,
           }
         }),
       }
