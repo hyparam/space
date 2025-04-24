@@ -53,6 +53,26 @@ async function fetchFilesList(url: DirectoryUrl, options?: {requestInit?: Reques
 export function getHuggingFaceSource(sourceId: string, options?: {requestInit?: RequestInit, accessToken?: string}): FileSource | DirSource | undefined {
   try {
     const url = parseHuggingFaceUrl(sourceId)
+    async function fetchVersions() {
+      const refsList = await fetchRefsList(url.repo, options)
+      return {
+        label: 'Branches',
+        versions: refsList.map(({ refType, name, ref }) => {
+          const label = refType === 'branches' ? name :
+            refType === 'converts' ? `[convert] ${name}` :
+              refType === 'tags' ? `[tag] ${name}` :
+                `[pr] ${name}`
+          // remove refs/heads/ from the ref name
+          // e.g. refs/heads/main -> main
+          const fixedRef = refType === 'branches' ? ref.replace(/refs\/heads\//, '') : ref
+          const branchSourceId = `${url.origin}/datasets/${url.repo}/${url.kind === 'file' ? 'blob' : 'tree'}/${fixedRef}${url.path}`
+          return {
+            label,
+            sourceId: branchSourceId,
+          }
+        }),
+      }
+    }
     if (url.kind === 'file') {
       return {
         kind: 'file',
@@ -61,6 +81,7 @@ export function getHuggingFaceSource(sourceId: string, options?: {requestInit?: 
         fileName: getFileName(url.path),
         resolveUrl: url.resolveUrl,
         requestInit: options?.requestInit,
+        fetchVersions,
       }
     } else {
       return {
@@ -69,6 +90,7 @@ export function getHuggingFaceSource(sourceId: string, options?: {requestInit?: 
         sourceParts: getSourceParts(url),
         prefix: getPrefix(url),
         listFiles: () => fetchFilesList(url, options),
+        fetchVersions,
       }
     }
   } catch (e) {
@@ -168,4 +190,66 @@ export function parseHuggingFaceUrl(url: string): HFUrl {
   }
 
   throw new Error('Unsupported Hugging Face URL')
+}
+
+interface RefResponse {
+  name: string;
+  ref: string;
+  targetCommit: string;
+}
+
+export const refTypes = [
+  'branches',
+  'tags',
+  'converts',
+  'pullRequests',
+] as const
+type RefType = (typeof refTypes)[number];
+type RefsResponse = Partial<Record<RefType, RefResponse[]>>;
+
+export interface RefMetadata extends RefResponse {
+  refType: RefType; // TODO(SL): use it to style the refs differently?
+}
+
+/**
+ * List refs in a HF dataset repo
+ *
+ * Example API URL: https://huggingface.co/api/datasets/codeparrot/github-code/refs
+ *
+ * @param repo (namespace/repo)
+ * @param [options]
+ * @param [options.requestInit] - request init object to pass to fetch
+ * @param [options.accessToken] - access token to use for authentication
+ *
+ * @returns the list of branches, tags, pull requests, and converts
+ */
+export async function fetchRefsList(
+  repo: string,
+  options?: {requestInit?: RequestInit, accessToken?: string},
+): Promise<RefMetadata[]> {
+  if (options?.accessToken && !options.accessToken.startsWith('hf_')) {
+    throw new TypeError('Your access token must start with \'hf_\'')
+  }
+  const headers = new Headers(options?.requestInit?.headers)
+  headers.set('accept', 'application/json')
+  if (options?.accessToken) {
+    headers.set('Authorization', `Bearer ${options.accessToken}`)
+  }
+  const response = await fetch(`https://huggingface.co/api/datasets/${repo}/refs`, { ...options?.requestInit, headers })
+  if (!response.ok) {
+    throw new Error(`HTTP error ${response.status.toString()}`)
+  }
+  const refsByType = await response.json() as RefsResponse
+  return refTypes.flatMap((refType) => {
+    const refResponse = refsByType[refType]
+    if (!refResponse) {
+      return []
+    }
+    return refResponse.map((refResponse) => {
+      return {
+        refType,
+        ...refResponse,
+      }
+    })
+  })
 }
