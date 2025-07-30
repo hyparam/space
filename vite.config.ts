@@ -16,5 +16,7 @@ export default defineConfig({
       strict: false,
     }
   },
-  base:'./',
+  optimizeDeps: {
+    exclude: ["hyperparam"],
+  },
 })
