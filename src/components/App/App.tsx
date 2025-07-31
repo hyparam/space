@@ -88,7 +88,10 @@ export default function App() {
    * Note that the iframe has no access to the parent window's location, so
    * it might already by in sync, we just don't know.
    */
-  window.parent.postMessage({ queryString: window.location.search }, 'https://huggingface.co')
+  const huggingfaceOrigin = 'https://huggingface.co'
+  if (window.parent.origin === huggingfaceOrigin) {
+    window.parent.postMessage({ queryString: window.location.search }, huggingfaceOrigin)
+  }
 
   return <ConfigProvider value={config}>
     <Page source={source} navigation={{ row, col }} />
