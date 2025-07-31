@@ -93,8 +93,7 @@ export function getHuggingFaceSource(sourceId: string, options?: {requestInit?: 
         fetchVersions,
       }
     }
-  } catch (e) {
-    console.error(e)
+  } catch {
     return undefined
   }
 }
