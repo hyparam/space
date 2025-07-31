@@ -17,6 +17,7 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
+    // only for dev, not for build
     exclude: ["hyperparam"],
-  },
+  }
 })
