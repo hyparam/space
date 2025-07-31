@@ -87,11 +87,15 @@ export default function App() {
    *
    * Note that the iframe has no access to the parent window's location, so
    * it might already by in sync, we just don't know.
+   *
+   * Also, trying to access the parent window's origin will throw an error:
+   *   DOMException: Permission denied to access property "origin" on cross-origin object
+   * so we cannot test it before sending the message to a specific targetOrigin.
+   *
+   * We thus send the message to any origin ('*') and hope that the parent window
+   * will handle it correctly.
    */
-  const huggingfaceOrigin = 'https://huggingface.co'
-  if (window.parent.origin === huggingfaceOrigin) {
-    window.parent.postMessage({ queryString: window.location.search }, huggingfaceOrigin)
-  }
+  window.parent.postMessage({ queryString: window.location.search }, '*')
 
   return <ConfigProvider value={config}>
     <Page source={source} navigation={{ row, col }} />
